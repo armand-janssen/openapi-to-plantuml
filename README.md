@@ -12,3 +12,9 @@ This tool creates a [PlantUML Class Diagram](http://plantuml.com/class-diagram) 
 ```
 node ....
 ```
+
+# TODO
+- load OpenAPI specification via command line
+- add command line option to show/hide details of attributes
+- add command line option to save output to file
+- remove console.log commands
