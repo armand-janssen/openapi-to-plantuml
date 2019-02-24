@@ -23,7 +23,7 @@ Options:
 ```
 node index.js example/vehicle.yaml
 ```
-**Prints to standard output with verbose debug info :) **
+**Prints to standard output with verbose debug info :)**
 ```
 node index.js example/vehicle.yaml --verbose 
 ```
