@@ -34,5 +34,6 @@ node index.js example/vehicle.yaml --output ./example.plantuml
 ```
 
 # TODO
-- add command line option to show/hide details of attributes
 - refactor / cleanup code
+- expand example with extra files
+- test loading the openapi yaml, instead of the vehicle.yaml

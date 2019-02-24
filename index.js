@@ -5,10 +5,11 @@ const program = require('commander')
 const lineBreak = "\n"
 const tab = "  "
 const colon = " : "
-const detailStart = " ["
+const detailStart = "["
 const detailEnd = "]"
 var allParsedSchemas = []
 let verbose = false
+let extraAttributeDetails = false
 
 class Property {
   constructor(name, type, required, details) {
@@ -61,42 +62,44 @@ class Property {
       }
 
       var details = '<'
-      if (type === 'string') {
-        details += property.minLength == undefined ? '' : detailStart + 'minLength:' + property.minLength + detailEnd
-        details += property.maxLength == undefined ? '' : detailStart + 'maxLength:' + property.maxLength + detailEnd
-        details += property.pattern == undefined ? '' : detailStart + 'pattern:' + property.pattern + detailEnd
+       
+        if (type === 'string') {
+          details += property.minLength == undefined ? '' : detailStart + 'minLength:' + property.minLength + detailEnd
+          details += property.maxLength == undefined ? '' : detailStart + 'maxLength:' + property.maxLength + detailEnd
+          details += property.pattern == undefined ? '' : detailStart + 'pattern:' + property.pattern + detailEnd
 
-        if (property.enum != undefined) {
-          type = 'enum'
+          if (property.enum != undefined) {
+            type = 'enum'
 
-          details += detailStart
-          var first = true
-          property.enum.forEach(value => {
-            details += (first ? '' : ', ') + value
-            first = false
-          })
-          details += detailEnd
-        } else if (property.format === 'date') {
-          type = 'date'
-          details += detailStart + 'pattern: YYYY-mm-dd'
-        } else if (property.format === 'datetime') {
-          type = 'datetime'
-          details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
+            details += detailStart
+            var first = true
+            property.enum.forEach(value => {
+              details += (first ? '' : ', ') + value
+              first = false
+            })
+            details += detailEnd
+          } else if (property.format === 'date') {
+            type = 'date'
+            details += detailStart + 'pattern: YYYY-mm-dd'
+          } else if (property.format === 'datetime') {
+            type = 'datetime'
+            details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
+          }
+        } else if (type === 'number' || type === 'integer') {
+          details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
+          details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
+          details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
+          details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
+        } else if (type === 'array') {
+          details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
+          details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
+          details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
         }
-      } else if (type === 'number' || type === 'integer') {
-        details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
-        details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
-        details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
-        details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
-      } else if (type === 'array') {
-        details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
-        details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
-        details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
-      }
 
-      details += '>'
+        details += '>'
+      
       // if no details are added, then clear the brackets
-      if (details.length === 2) {
+      if (details.length === 1 || !extraAttributeDetails) {
         details = ''
       }
       var requiredProperty = (required == undefined ? undefined : required.includes(name))
@@ -237,6 +240,7 @@ var inputFilename = undefined
 program
   .version('0.1')
   .usage('[options] <inputfile>')
+  .option('-d, --details', 'Show extra attribute details')
   .option('-o, --output <output file>', 'The output file')
   .option('-v, --verbose', 'Show verbose debug output')
   .parse(process.argv)
@@ -244,7 +248,9 @@ program
 if (program.verbose) {
   verbose = true
 }
-
+if (program.details) {
+  extraAttributeDetails = true
+}
 if (!program.args.length) {
   program.help();
 
