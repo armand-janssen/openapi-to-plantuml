@@ -31,7 +31,7 @@ class Property {
       var name = propertyIndex
       var type = property.type
 
-      if (verbose) console.log("***************** propcessing property :: [" + name + "] of type ::  [" + type + "]")
+      if (verbose) console.log("***************** processing property :: [" + name + "] of type ::  [" + type + "]")
       if (type === 'array') {
         var items = property.items
         for (var itemIndex in property.items) {
@@ -164,7 +164,7 @@ class Schema {
       } else if (attribute["type"] != undefined) {
         var allOfType = attribute["type"]
         if (verbose) console.log("***************** type :: " + allOfType)
-        var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(attribute.properties, schemaIndex)
+        var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(attribute.properties, attribute.required)
         properties = parsedProperties
 
       }

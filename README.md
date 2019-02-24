@@ -36,4 +36,3 @@ node index.js example/vehicle.yaml --output ./example.plantuml
 # TODO
 - add command line option to show/hide details of attributes
 - refactor / cleanup code
-- defect: subtypes do not show required indicator

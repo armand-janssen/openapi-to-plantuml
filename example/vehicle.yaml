@@ -60,7 +60,7 @@ components:
                 - turboshaft
           required:
             - engines
-            - typeOfEngines
+            - typeOfEngine
           example: |
             { 
               'type': 'air',
