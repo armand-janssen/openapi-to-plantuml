@@ -1,0 +1,14 @@
+{
+  "name": "yaml-components-openapi-to-plantuml",
+  "version": "1.0.0",
+  "description": "Converts OpenAPI 3 components to PlantUml",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Armand Janssen",
+  "license": "GNU GENERAL PUBLIC LICENSE",
+  "dependencies": {
+    "yaml": "^1.3.2"
+  }
+}
