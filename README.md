@@ -10,7 +10,27 @@ This tool creates a [PlantUML Class Diagram](http://plantuml.com/class-diagram) 
 # Usage
 
 ```
-node ....
+Usage: index [options] <inputfile>
+
+Options:
+  -V, --version               output the version number
+  -o, --output <output file>  The output file
+  -v, --verbose               Show verbose debug output
+  -h, --help                  output usage information
+```
+## Example
+**Prints to standard output**
+```
+node index.js example/vehicle.yaml
+```
+**Prints to standard output with verbose debug info :) **
+```
+node index.js example/vehicle.yaml --verbose 
+```
+
+**Prints to standard output and outputfile**
+```
+node index.js example/vehicle.yaml --output ./example.plantuml
 ```
 
 # TODO
