@@ -14,10 +14,6 @@ node ....
 ```
 
 # TODO
-- add working example
-- load OpenAPI specification via command line
 - add command line option to show/hide details of attributes
-- add command line option to save output to file
-- remove console.log commands
 - refactor / cleanup code
-
+- defect: subtypes do not show required indicator

@@ -9,6 +9,7 @@
   "author": "Armand Janssen",
   "license": "GNU GENERAL PUBLIC LICENSE",
   "dependencies": {
+    "commander": "^2.19.0",
     "yaml": "^1.3.2"
   }
 }

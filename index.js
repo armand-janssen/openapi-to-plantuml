@@ -1,8 +1,6 @@
 const YAML = require('yaml')
 const fs = require('fs')
-
-// refactor to command file
-const inputFile = './openapi-spec.yaml'
+const program = require('commander')
 
 const lineBreak = "\n"
 const tab = "  "
@@ -10,7 +8,7 @@ const colon = " : "
 const detailStart = " ["
 const detailEnd = "]"
 var allParsedSchemas = []
-
+let verbose = false
 
 class Property {
   constructor(name, type, required, details) {
@@ -33,7 +31,7 @@ class Property {
       var name = propertyIndex
       var type = property.type
 
-      console.log("***************** propcessing property :: [" + name + "] of type ::  [" + type + "]")
+      if (verbose) console.log("***************** propcessing property :: [" + name + "] of type ::  [" + type + "]")
       if (type === 'array') {
         var items = property.items
         for (var itemIndex in property.items) {
@@ -90,7 +88,7 @@ class Property {
         details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
         details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
         details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
-      }      else if (type === 'array') {
+      } else if (type === 'array') {
         details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
         details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
         details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
@@ -131,7 +129,7 @@ class Schema {
 
       var name = schemaIndex;
       var parent = undefined;
-      console.log("\n\n############################### schema name :: " + name + " ###############################")
+      if (verbose) console.log("\n\n############################### schema name :: " + name + " ###############################")
 
       if (schema.allOf != undefined) {
         referencedFiles = this.processInheritance(schema, schemaIndex, schema.allOf)
@@ -152,8 +150,8 @@ class Schema {
   }
 
   static processInheritance(schema, schemaIndex, allOf) {
-    console.log("***************** schema == allOf :: ")
-    console.log(allOf)
+    if (verbose) console.log("***************** schema == allOf :: ")
+    if (verbose) console.log(allOf)
     var parsedSchemas = []
     var parent = undefined
     var properties = undefined
@@ -162,10 +160,10 @@ class Schema {
       var attribute = allOf[attributeIndex]
       if (attribute["$ref"] != undefined) {
         parent = lastToken(attribute["$ref"], '/')
-        console.log("***************** parent :: " + parent)
+        if (verbose) console.log("***************** parent :: " + parent)
       } else if (attribute["type"] != undefined) {
         var allOfType = attribute["type"]
-        console.log("***************** type :: " + allOfType)
+        if (verbose) console.log("***************** type :: " + allOfType)
         var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(attribute.properties, schemaIndex)
         properties = parsedProperties
 
@@ -206,7 +204,7 @@ class Schema {
 }
 
 function loadYamlFile(file) {
-  console.log("***************** processing file :: " + file)
+  if (verbose) console.log("***************** processing file :: " + file)
 
   var loadedFile = fs.readFileSync(file, 'UTF-8')
   var myYaml = YAML.parse(loadedFile)
@@ -233,14 +231,37 @@ function lastToken(value, token) {
   return xs.length > 1 ? xs.pop() : null;
 }
 
-loadYamlFile(inputFile)
+// var verbose = undefined
+var inputFilename = undefined
 
-var uml = "@startuml" + lineBreak
-for (schemaIndex in allParsedSchemas) {
-  uml += allParsedSchemas[schemaIndex].toUml()
+program
+  .version('0.1')
+  .usage('[options] <inputfile>')
+  .option('-o, --output <output file>', 'The output file')
+  .option('-v, --verbose', 'Show verbose debug output')
+  .parse(process.argv)
+
+if (program.verbose) {
+  verbose = true
 }
-uml += "@enduml" + lineBreak
 
-console.log(uml)
+if (!program.args.length) {
+  program.help();
 
-fs.writeFileSync('openapi.plantuml', uml, 'utf8')
+} else {
+
+  inputFile = program.args[0]
+  loadYamlFile(inputFile)
+
+  var uml = "@startuml" + lineBreak
+  for (schemaIndex in allParsedSchemas) {
+    uml += allParsedSchemas[schemaIndex].toUml()
+  }
+  uml += "@enduml" + lineBreak
+
+  console.log(uml)
+
+  if (program.output != undefined) {
+    fs.writeFileSync(program.output, uml, 'utf8')
+  }
+}
