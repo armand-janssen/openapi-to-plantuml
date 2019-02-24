@@ -38,3 +38,4 @@ node index.js example/vehicle.yaml --output ./example.plantuml
 - expand example with extra files
 - test loading the openapi yaml, instead of the vehicle.yaml
 - test with multiple referenced files, while not running the script in the same folder
+- add aggregation to example
