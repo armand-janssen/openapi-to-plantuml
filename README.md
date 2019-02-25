@@ -6,9 +6,10 @@ This tool creates a [PlantUML Class Diagram](http://plantuml.com/class-diagram) 
 - OpenAPI 3.0.2
 - OpenAPI specification should be in **YAML**
 - [NodeJS](http://nodejs.org)
+- All yaml files should be in 1 directory
 
 # Usage
-
+Always run the script from the directory in which the yaml file are.
 ```
 Usage: index [options] <inputfile>
 
@@ -21,21 +22,18 @@ Options:
 ## Example
 **Prints to standard output**
 ```
-node index.js example/vehicle.yaml
+node ../index.js example/vehicle.yaml
 ```
 **Prints to standard output with verbose debug info :)**
 ```
-node index.js example/vehicle.yaml --verbose 
+node ../index.js example/vehicle.yaml --verbose 
 ```
 
 **Prints to standard output and outputfile**
 ```
-node index.js example/vehicle.yaml --output ./example.plantuml
+node ../index.js example/vehicle.yaml --output ./example.plantuml
 ```
 
 # TODO
 - refactor / cleanup code
-- expand example with extra files
 - test loading the openapi yaml, instead of the vehicle.yaml
-- test with multiple referenced files, while not running the script in the same folder
-- add aggregation to example

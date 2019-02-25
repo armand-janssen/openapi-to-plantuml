@@ -1,0 +1,27 @@
+components:
+  schemas:
+    owner:
+      title: Owner
+      description: Owner information
+      type: object
+      properties:
+        name: 
+          description: the name of the owner
+          type: string
+          maxLength: 30
+          example: John Doe
+        from:
+          description: the date the owner, bought the vehicle
+          type: string
+          format: date
+          example: 2018-08-24
+        to:
+          description: the date the owner, sold the vehicle
+          type: string
+          format: date
+          example: 2019-07-28
+      required:
+        - name
+        - from
+          
+      

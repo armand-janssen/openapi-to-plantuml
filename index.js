@@ -33,13 +33,23 @@ class Property {
       var type = property.type
 
       if (verbose) console.log("***************** processing property :: [" + name + "] of type ::  [" + type + "]")
-      if (type === 'array') {
+      // reference to other object, maybe in other file
+      if (type === undefined && property['$ref'] != undefined) {
+        var reference = property['$ref']
+        var referencedFile = reference.match('^.*yaml')
+        if (referencedFile.length === 1) {
+          referencedFiles.push(referencedFile[0])
+        }
+        type = name
+        // add relationShip
+        relationShips.push(" -- " + lastToken(reference, '/') + ' : ' + name)
+      } else if (type === 'array') {
         var items = property.items
         for (var itemIndex in property.items) {
           var item = property.items[itemIndex]
           if (typeof item === 'string') {
             // add relationShip
-            relationShips.push(lastToken(item, '/') + ' : ' + name)
+            relationShips.push(" *-- " + lastToken(item, '/') + ' : ' + name)
 
             // is it a reference to an external file?
             var referencedFile = item.match('^.*yaml')
@@ -50,7 +60,7 @@ class Property {
           else if (typeof item === 'object') {
             item.forEach(ref => {
               var reference = ref["$ref"]
-              relationShips.push(lastToken(reference, '/') + ' : ' + name)
+              relationShips.push(" -- " + lastToken(reference, '/') + ' : ' + name)
 
               var referencedFile = reference.match('^.*yaml')
               if (referencedFile.length === 1) {
@@ -62,44 +72,44 @@ class Property {
       }
 
       var details = '<'
-       
-        if (type === 'string') {
-          details += property.minLength == undefined ? '' : detailStart + 'minLength:' + property.minLength + detailEnd
-          details += property.maxLength == undefined ? '' : detailStart + 'maxLength:' + property.maxLength + detailEnd
-          details += property.pattern == undefined ? '' : detailStart + 'pattern:' + property.pattern + detailEnd
 
-          if (property.enum != undefined) {
-            type = 'enum'
+      if (type === 'string') {
+        details += property.minLength == undefined ? '' : detailStart + 'minLength:' + property.minLength + detailEnd
+        details += property.maxLength == undefined ? '' : detailStart + 'maxLength:' + property.maxLength + detailEnd
+        details += property.pattern == undefined ? '' : detailStart + 'pattern:' + property.pattern + detailEnd
 
-            details += detailStart
-            var first = true
-            property.enum.forEach(value => {
-              details += (first ? '' : ', ') + value
-              first = false
-            })
-            details += detailEnd
-          } else if (property.format === 'date') {
-            type = 'date'
-            details += detailStart + 'pattern: YYYY-mm-dd'
-          } else if (property.format === 'datetime') {
-            type = 'datetime'
-            details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
-          }
-        } else if (type === 'number' || type === 'integer') {
-          details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
-          details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
-          details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
-          details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
-        } else if (type === 'array') {
-          details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
-          details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
-          details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
+        if (property.enum != undefined) {
+          type = 'enum'
+
+          details += detailStart
+          var first = true
+          property.enum.forEach(value => {
+            details += (first ? '' : ', ') + value
+            first = false
+          })
+          details += detailEnd
+        } else if (property.format === 'date') {
+          type = 'date'
+          details += detailStart + 'pattern: YYYY-mm-dd'
+        } else if (property.format === 'datetime') {
+          type = 'datetime'
+          details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
         }
+      } else if (type === 'number' || type === 'integer') {
+        details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
+        details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
+        details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
+        details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
+      } else if (type === 'array') {
+        details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
+        details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
+        details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
+      }
 
-        details += '>'
-      
+      details += '>'
+
       // if no details are added, then clear the brackets
-      if (details.length === 1 || !extraAttributeDetails) {
+      if (details.length === 2 || !extraAttributeDetails) {
         details = ''
       }
       var requiredProperty = (required == undefined ? undefined : required.includes(name))
@@ -123,8 +133,8 @@ class Schema {
     this.relationShips = relationShips
     this.parent = parent
   }
+
   static parseSchemas(schemas) {
-    var parsedSchemas = []
     var allReferencedFiles = []
 
     for (var schemaIndex in schemas) {
@@ -136,20 +146,25 @@ class Schema {
 
       if (schema.allOf != undefined) {
         referencedFiles = this.processInheritance(schema, schemaIndex, schema.allOf)
-        allReferencedFiles.push(referencedFiles)
-
+        if (referencedFiles.length > 0) {
+          referencedFiles.forEach(referencedFile => {
+            allReferencedFiles.push(referencedFile)
+          })
+        }
       } else {
         // parse properties of this schema
         var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(schema.properties, schema.required)
-        if (parsedSchemas[name] === undefined) {
+        if (allParsedSchemas[name] === undefined) {
           allParsedSchemas[name] = new Schema(name, parsedProperties, relationShips, parent)
-          allReferencedFiles.push(referencedFiles)
-
+          if (referencedFiles.length > 0) {
+            referencedFiles.forEach(referencedFile => {
+              allReferencedFiles.push(referencedFile)
+            })
+          }
         }
       }
-
     }
-    return [parsedSchemas, referencedFiles]
+    return allReferencedFiles
   }
 
   static processInheritance(schema, schemaIndex, allOf) {
@@ -157,7 +172,7 @@ class Schema {
     if (verbose) console.log(allOf)
     var parsedSchemas = []
     var parent = undefined
-    var properties = undefined
+    var allReferencedFiles = []
 
     for (var attributeIndex in allOf) {
       var attribute = allOf[attributeIndex]
@@ -168,18 +183,16 @@ class Schema {
         var allOfType = attribute["type"]
         if (verbose) console.log("***************** type :: " + allOfType)
         var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(attribute.properties, attribute.required)
-        properties = parsedProperties
-
+        if (referencedFiles.length > 0) {
+          allReferencedFiles.push(referencedFiles)
+        }
       }
-
     }
-    // var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(schema.properties, schemaIndex)
-
     if (parsedSchemas[schemaIndex] === undefined) {
       allParsedSchemas[schemaIndex] = new Schema(schemaIndex, parsedProperties, relationShips, parent)
     }
 
-    return referencedFiles
+    return allReferencedFiles
   }
 
   toUml() {
@@ -193,7 +206,7 @@ class Schema {
     // uml the relation ships
     if (this.relationShips != undefined) {
       this.relationShips.forEach(relationShip => {
-        uml += lineBreak + this.name + " *-- " + relationShip + lineBreak
+        uml += lineBreak + this.name + relationShip + lineBreak
       })
     }
 
@@ -216,14 +229,13 @@ function loadYamlFile(file) {
     if (myYaml.components != undefined) {
       if (myYaml.components.schemas != undefined) {
         schemas = myYaml.components.schemas
-        var [parsedSchemas, referencedFiles] = Schema.parseSchemas(schemas)
+        var referencedFiles = Schema.parseSchemas(schemas)
 
-        if (referencedFiles != undefined) {
+        if (referencedFiles != undefined && referencedFiles.length > 0) {
           referencedFiles.forEach(referencedFile => {
-            loadYamlFile(referencedFile)
+            loadYamlFile("./" + referencedFile)
           })
         }
-
       }
     }
   }
