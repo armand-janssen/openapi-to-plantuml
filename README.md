@@ -33,6 +33,14 @@ node ../index.js example/vehicle.yaml --verbose
 ```
 node ../index.js example/vehicle.yaml --output ./example.plantuml
 ```
+# Example output
+
+## No details
+![Example no details](https://github.com/armand-janssen/openapi-to-plantuml/blob/master/example/example-no-details.png)
+
+## Details
+![Example with details](https://github.com/armand-janssen/openapi-to-plantuml/blob/master/example/example-with-details.png)
+
 
 # TODO
 - refactor / cleanup code
