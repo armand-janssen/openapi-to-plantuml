@@ -277,9 +277,10 @@ if (!program.args.length) {
   }
   uml += "@enduml" + lineBreak
 
-  console.log(uml)
 
-  if (program.output != undefined) {
+  if (program.output == undefined) {
+    console.log(uml)
+  } else {
     fs.writeFileSync(program.output, uml, 'utf8')
   }
 }
