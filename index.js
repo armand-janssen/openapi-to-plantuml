@@ -37,7 +37,7 @@ class Property {
       if (type === undefined && property['$ref'] != undefined) {
         var reference = property['$ref']
         var referencedFile = reference.match('^.*yaml')
-        if (referencedFile.length === 1) {
+        if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
           referencedFiles.push(referencedFile[0])
         }
         type = name
@@ -53,7 +53,7 @@ class Property {
 
             // is it a reference to an external file?
             var referencedFile = item.match('^.*yaml')
-            if (referencedFile != undefined && referencedFile.length === 1) {
+            if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
               referencedFiles.push(referencedFile[0])
             }
           }
@@ -148,7 +148,9 @@ class Schema {
         referencedFiles = this.processInheritance(schema, schemaIndex, schema.allOf)
         if (referencedFiles.length > 0) {
           referencedFiles.forEach(referencedFile => {
-            allReferencedFiles.push(referencedFile)
+            if (!allReferencedFiles.includes(referencedFile)) {
+              allReferencedFiles.push(referencedFile)
+            }
           })
         }
       } else {
@@ -158,7 +160,9 @@ class Schema {
           allParsedSchemas[name] = new Schema(name, parsedProperties, relationShips, parent)
           if (referencedFiles.length > 0) {
             referencedFiles.forEach(referencedFile => {
-              allReferencedFiles.push(referencedFile)
+              if (!allReferencedFiles.includes(referencedFile)) {
+                allReferencedFiles.push(referencedFile)
+              }
             })
           }
         }
@@ -184,7 +188,11 @@ class Schema {
         if (verbose) console.log("***************** type :: " + allOfType)
         var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(attribute.properties, attribute.required)
         if (referencedFiles.length > 0) {
-          allReferencedFiles.push(referencedFiles)
+          referencedFiles.forEach(referencedFile => {
+            if (!allReferencedFiles.includes(referencedFile)) {
+              allReferencedFiles.push(referencedFile)
+            }
+          })
         }
       }
     }
