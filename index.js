@@ -3,6 +3,10 @@ const fs = require('fs')
 const program = require('commander')
 
 const lineBreak = "\n"
+const mdRowSeperator = "| "
+const mdHeaderCenterAligned = " :---: "
+const mdHeaderLeftAligned = " :--- "
+const mdHeaderRightAligned = " ---: "
 const tab = "  "
 const colon = " : "
 const detailStart = "["
@@ -12,11 +16,13 @@ let verbose = false
 let extraAttributeDetails = false
 
 class Property {
-  constructor(name, type, required, details) {
+  constructor(name, type, required, details, description, example) {
     this.name = name
     this.type = type
     this.required = required
     this.details = details
+    this.description = description
+    this.example = example
   }
 
   static parseProperties(properties, required) {
@@ -31,6 +37,8 @@ class Property {
 
       var name = propertyIndex
       var type = property.type
+      var description = property.description
+      var example = property.example
 
       if (verbose) console.log("***************** processing property :: [" + name + "] of type ::  [" + type + "]")
       // reference to other object, maybe in other file
@@ -110,10 +118,15 @@ class Property {
 
       // if no details are added, then clear the brackets
       if (details.length === 2 || !extraAttributeDetails) {
+        if (verbose) console.log('No details for property ' + name)
         details = ''
+      } else {
+        if (verbose) console.log('Details for property ' + name + ': ' + details)
       }
+
+
       var requiredProperty = (required == undefined ? undefined : required.includes(name))
-      parsedProperties.push(new Property(name, type, requiredProperty, details))
+      parsedProperties.push(new Property(name, type, requiredProperty, details, description, example))
     }
 
     return [parsedProperties, relationShips, referencedFiles]
@@ -122,14 +135,29 @@ class Property {
   toUml() {
     return tab + this.name + (this.required ? ' * ' : '') + colon + this.type + " " + this.details + lineBreak
   }
+
+  toMarkDown() {
+    console.log("["+this.details + "]")
+    var markDownDetails = (this.details == undefined || this.details == '') ? ' &nbsp; ' : this.details.replace(/\]\>/g, '').replace(/\<\[/g, '').replace(/:/g, ' : ').replace(/\>/g, '').replace(/\]\[/g, '<br/>')
+    var markDownDescription = this.description == undefined ? ' &nbsp; ' : this.description.replace(/\n/g, "<br/>").replace(/todo/gi, "<span style=\"color:red\"> **TODO** </span>")
+    var markDownExample = this.example == undefined ? ' &nbsp; ' : this.example.toString().replace(/\n/g, "<br/>")
+    return mdRowSeperator + this.name
+      + mdRowSeperator + (this.required ? ' Y ' : '')
+      + mdRowSeperator + this.type
+      + mdRowSeperator + markDownDescription
+      + mdRowSeperator + markDownDetails
+      + mdRowSeperator + markDownExample
+      + mdRowSeperator + lineBreak
+  }
 }
 
 
 
 class Schema {
-  constructor(name, properties, relationShips, parent) {
+  constructor(name, properties, description, relationShips, parent) {
     this.name = name
     this.properties = properties
+    this.description = description
     this.relationShips = relationShips
     this.parent = parent
   }
@@ -142,6 +170,8 @@ class Schema {
 
       var name = schemaIndex;
       var parent = undefined;
+      var description = schema.description;
+
       if (verbose) console.log("\n\n############################### schema name :: " + name + " ###############################")
 
       if (schema.allOf != undefined) {
@@ -157,7 +187,7 @@ class Schema {
         // parse properties of this schema
         var [parsedProperties, relationShips, referencedFiles] = Property.parseProperties(schema.properties, schema.required)
         if (allParsedSchemas[name] === undefined) {
-          allParsedSchemas[name] = new Schema(name, parsedProperties, relationShips, parent)
+          allParsedSchemas[name] = new Schema(name, parsedProperties, description, relationShips, parent)
           if (referencedFiles.length > 0) {
             referencedFiles.forEach(referencedFile => {
               if (!allReferencedFiles.includes(referencedFile)) {
@@ -177,6 +207,7 @@ class Schema {
     var parsedSchemas = []
     var parent = undefined
     var allReferencedFiles = []
+    var description = schema.description
 
     for (var attributeIndex in allOf) {
       var attribute = allOf[attributeIndex]
@@ -197,7 +228,7 @@ class Schema {
       }
     }
     if (parsedSchemas[schemaIndex] === undefined) {
-      allParsedSchemas[schemaIndex] = new Schema(schemaIndex, parsedProperties, relationShips, parent)
+      allParsedSchemas[schemaIndex] = new Schema(schemaIndex, parsedProperties, description, relationShips, parent)
     }
 
     return allReferencedFiles
@@ -225,6 +256,35 @@ class Schema {
     return uml
   }
 
+  toMarkDown() {
+    var md = "# " + this.name + lineBreak
+    md += this.description == undefined ? ' &nbsp;' : this.description.replace(/\n/g, "<br/>").replace(/todo/gi, "<span style=\"color:red\"> **TODO** </span>") 
+    md += lineBreak + lineBreak
+
+    md += lineBreak + mdRowSeperator + " property "
+    md += mdRowSeperator + " required "
+    md += mdRowSeperator + " type "
+    md += mdRowSeperator + " description "
+    md += mdRowSeperator + " details "
+    md += mdRowSeperator + " example "
+    md += mdRowSeperator + lineBreak
+
+    md += mdRowSeperator + mdHeaderLeftAligned  // property
+    md += mdRowSeperator + mdHeaderCenterAligned  // required
+    md += mdRowSeperator + mdHeaderCenterAligned  // type
+    md += mdRowSeperator + mdHeaderLeftAligned // description
+    md += mdRowSeperator + mdHeaderLeftAligned // details
+    md += mdRowSeperator + mdHeaderLeftAligned // example
+    md += mdRowSeperator + lineBreak
+
+
+    this.properties.forEach(property => {
+      md += property.toMarkDown()
+    })
+    md += lineBreak + lineBreak
+
+    return md
+  }
 }
 
 function loadYamlFile(file) {
@@ -262,6 +322,7 @@ program
   .usage('[options] <inputfile>')
   .option('-d, --details', 'Show extra attribute details')
   .option('-o, --output <output file>', 'The output file')
+  .option('-m, --markdown <output file>', 'The output file for markdown')
   .option('-v, --verbose', 'Show verbose debug output')
   .parse(process.argv)
 
@@ -286,9 +347,22 @@ if (!program.args.length) {
   uml += "@enduml" + lineBreak
 
 
-  if (program.output == undefined) {
-    console.log(uml)
-  } else {
+  if (program.output != undefined) {
     fs.writeFileSync(program.output, uml, 'utf8')
+  }
+
+  if (program.markdown != undefined) {
+    var md = "<!DOCTYPE html>" + lineBreak
+    md += "<html>" + lineBreak
+    md += "<title>PIVT</title>" + lineBreak
+    md += "<xmp theme=\"united\" style=\"display:none;\">" + lineBreak
+
+    for (schemaIndex in allParsedSchemas) {
+      md += allParsedSchemas[schemaIndex].toMarkDown()
+    }
+    md += "</xmp>" + lineBreak
+    md += "<script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script>" + lineBreak
+    md += "</html>"
+    fs.writeFileSync(program.markdown, md, 'utf8')
   }
 }
