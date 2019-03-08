@@ -45,5 +45,4 @@ node ../index.js example/vehicle.yaml --output ./example.plantuml
 # TODO
 - refactor / cleanup code
 - test loading the openapi yaml, instead of the vehicle.yaml
-- add markdown / html output of classes, so easy readable for non-tech people
 - add OpenAPI version validation
