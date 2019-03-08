@@ -137,7 +137,6 @@ class Property {
   }
 
   toMarkDown() {
-    console.log("["+this.details + "]")
     var markDownDetails = (this.details == undefined || this.details == '') ? ' &nbsp; ' : this.details.replace(/\]\>/g, '').replace(/\<\[/g, '').replace(/:/g, ' : ').replace(/\>/g, '').replace(/\]\[/g, '<br/>')
     var markDownDescription = this.description == undefined ? ' &nbsp; ' : this.description.replace(/\n/g, "<br/>").replace(/todo/gi, "<span style=\"color:red\"> **TODO** </span>")
     var markDownExample = this.example == undefined ? ' &nbsp; ' : this.example.toString().replace(/\n/g, "<br/>")
@@ -258,7 +257,7 @@ class Schema {
 
   toMarkDown() {
     var md = "# " + this.name + lineBreak
-    md += this.description == undefined ? ' &nbsp;' : this.description.replace(/\n/g, "<br/>").replace(/todo/gi, "<span style=\"color:red\"> **TODO** </span>") 
+    md += this.description == undefined ? ' &nbsp;' : this.description.replace(/\n/g, "<br/>").replace(/todo/gi, "<span style=\"color:red\"> **TODO** </span>")
     md += lineBreak + lineBreak
 
     md += lineBreak + mdRowSeperator + " property "
@@ -352,17 +351,10 @@ if (!program.args.length) {
   }
 
   if (program.markdown != undefined) {
-    var md = "<!DOCTYPE html>" + lineBreak
-    md += "<html>" + lineBreak
-    md += "<title>PIVT</title>" + lineBreak
-    md += "<xmp theme=\"united\" style=\"display:none;\">" + lineBreak
-
+    var md = ""
     for (schemaIndex in allParsedSchemas) {
       md += allParsedSchemas[schemaIndex].toMarkDown()
     }
-    md += "</xmp>" + lineBreak
-    md += "<script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script>" + lineBreak
-    md += "</html>"
     fs.writeFileSync(program.markdown, md, 'utf8')
   }
 }
