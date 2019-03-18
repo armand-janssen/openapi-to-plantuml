@@ -55,33 +55,43 @@ class Property {
         var items = property.items
         for (var itemIndex in property.items) {
           var item = property.items[itemIndex]
-          if (typeof item === 'string') {
-            // add relationShip
-            relationShips.push(" *-- " + lastToken(item, '/') + ' : ' + name)
-
-            // is it a reference to an external file?
-            var referencedFile = item.match('^.*yaml')
-            if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
-              referencedFiles.push(referencedFile[0])
-            }
+          if (itemIndex === 'type') {
+            type = 'array[] of ' + item + "s"
           }
-          else if (typeof item === 'object') {
-            item.forEach(ref => {
-              var reference = ref["$ref"]
-              relationShips.push(" -- " + lastToken(reference, '/') + ' : ' + name)
+          else if (itemIndex === '$ref') {
+            if (typeof item === 'string') {
+              // add relationShip
+              let objectName = lastToken(item, '/')
+              relationShips.push(" *-- " + objectName + ' : ' + name)
 
-              var referencedFile = reference.match('^.*yaml')
-              if (referencedFile.length === 1) {
+              type = 'array[] of ' + objectName
+
+              // is it a reference to an external file?
+              var referencedFile = item.match('^.*yaml')
+              if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
                 referencedFiles.push(referencedFile[0])
               }
-            })
+            }
+            else if (typeof item === 'object') {
+              item.forEach(ref => {
+                var reference = ref["$ref"]
+                let objectName = lastToken(reference, '/')
+                relationShips.push(" -- " + objectName + ' : ' + name)
+                type = 'array[] of ' + objectName
+
+                var referencedFile = reference.match('^.*yaml')
+                if (referencedFile.length === 1) {
+                  referencedFiles.push(referencedFile[0])
+                }
+              })
+            }
           }
         }
       }
 
       var details = '<'
-
-      if (type === 'string') {
+      let properyType = property.type
+      if (properyType === 'string') {
         details += property.minLength == undefined ? '' : detailStart + 'minLength:' + property.minLength + detailEnd
         details += property.maxLength == undefined ? '' : detailStart + 'maxLength:' + property.maxLength + detailEnd
         details += property.pattern == undefined ? '' : detailStart + 'pattern:' + property.pattern + detailEnd
@@ -103,12 +113,12 @@ class Property {
           type = 'datetime'
           details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
         }
-      } else if (type === 'number' || type === 'integer') {
+      } else if (properyType === 'number' || properyType === 'integer') {
         details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
         details += property.minimum == undefined ? '' : detailStart + 'minimum:' + property.minimum + detailEnd
         details += property.maximum == undefined ? '' : detailStart + 'maximum:' + property.maximum + detailEnd
         details += property.multipleOf == undefined ? '' : detailStart + 'multipleOf:' + property.multipleOf + detailEnd
-      } else if (type === 'array') {
+      } else if (properyType === 'array') {
         details += property.minItems == undefined ? '' : detailStart + 'minItems:' + property.minItems + detailEnd
         details += property.maxItems == undefined ? '' : detailStart + 'maxItems:' + property.maxItems + detailEnd
         details += property.uniqueItems == undefined ? '' : detailStart + 'uniqueItems:' + property.uniqueItems + detailEnd
