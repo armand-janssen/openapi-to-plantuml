@@ -13,7 +13,7 @@ function getTestData(testYamlFile) {
 
 
 describe('parseFourProperties no required, including details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestFourPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = []
@@ -24,7 +24,7 @@ describe('parseFourProperties no required, including details, not versbose', () 
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 4)
+    assert.equal(arrayUnderTest[0].length, 5)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
@@ -42,11 +42,14 @@ describe('parseFourProperties no required, including details, not versbose', () 
   it("Check fourth property: age", () => {
     assertPropertyAge(arrayUnderTest[0][3], false, '<[minimum:15][maximum:120][multipleOf:1]>')
   })
+  it("Check fifth property: nicknames", () => {
+    assertPropertyNicknames(arrayUnderTest[0][4], false, '')
+  })
 
 });
 
 describe('parseFourProperties including required, no details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestFourPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -57,7 +60,7 @@ describe('parseFourProperties including required, no details, not versbose', () 
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 4)
+    assert.equal(arrayUnderTest[0].length, 5)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
@@ -73,6 +76,9 @@ describe('parseFourProperties including required, no details, not versbose', () 
   })
   it("Check fourth property: age", () => {
     assertPropertyAge(arrayUnderTest[0][3], true, '')
+  })
+  it("Check fifth property: nicknames", () => {
+    assertPropertyNicknames(arrayUnderTest[0][4], false, '')
   })
 });
 
@@ -111,7 +117,15 @@ function assertPropertyAge(property, expectedRequired, expectedDetails) {
   assert.equal(property.example, '23')
 }
 
+function assertPropertyNicknames(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'nicknames')
+  assert.equal(property.type, 'array[] of strings')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, 'the nicknames of the owner')
+  assert.equal(property.example, undefined)
 
+}
 describe('parseTwoProperties containting 1 relationship in the same file including required, no details, not versbose', () => {
   let testData = getTestData('./test/propertyTestTwoPropertiesOneRelationShipsNoReferencesToOtherFiles.yaml')
 
@@ -167,6 +181,24 @@ describe('parseThreeProperties containting 2 relationship in the same file and o
     assert.equal(property.details, '')
     assert.equal(property.description, 'the name of the owner')
     assert.equal(property.example, 'John Doe')
+  })
+  it("Check second property: name", () => {
+    let property = arrayUnderTest[0][1]
+    assert.equal(property.name, 'partner')
+    assert.equal(property.type, 'partner')
+    assert.equal(property.required, true)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'partner of the owner')
+    assert.equal(property.example, undefined)
+  })
+  it("Check third property: name", () => {
+    let property = arrayUnderTest[0][2]
+    assert.equal(property.name, 'children')
+    assert.equal(property.type, 'array[] of child')
+    assert.equal(property.required, false)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'children of the owner')
+    assert.equal(property.example, undefined)
   })
   it("Check first relationship: partner", () => {
     let relationShip = arrayUnderTest[1][0]

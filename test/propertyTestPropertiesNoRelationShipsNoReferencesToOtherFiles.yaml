@@ -27,6 +27,11 @@ components:
           maximum: 120
           multipleOf: 1
           example: 23
+        nicknames:
+          description: the nicknames of the owner
+          type: array
+          items:
+            type: string
       required:
         - name
         - from
