@@ -42,26 +42,36 @@ class Property {
         var items = property.items
         for (var itemIndex in property.items) {
           var item = property.items[itemIndex]
-          if (typeof item === 'string') {
-            // add relationShip
-            relationShips.push(" *-- " + lastToken(item, '/') + ' : ' + name)
-
-            // is it a reference to an external file?
-            var referencedFile = item.match('^.*yaml')
-            if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
-              referencedFiles.push(referencedFile[0])
-            }
+          if (itemIndex === 'type') {
+            type = 'array[] of ' + item + "s"
           }
-          else if (typeof item === 'object') {
-            item.forEach(ref => {
-              var reference = ref["$ref"]
-              relationShips.push(" -- " + lastToken(reference, '/') + ' : ' + name)
+          else if (itemIndex === '$ref') {
+            if (typeof item === 'string') {
+              // add relationShip
+              let objectName = lastToken(item, '/')
+              relationShips.push(" *-- " + objectName + ' : ' + name)
 
-              var referencedFile = reference.match('^.*yaml')
-              if (referencedFile.length === 1) {
+              type = 'array[] of ' + objectName
+
+              // is it a reference to an external file?
+              var referencedFile = item.match('^.*yaml')
+              if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
                 referencedFiles.push(referencedFile[0])
               }
-            })
+            }
+            else if (typeof item === 'object') {
+              item.forEach(ref => {
+                var reference = ref["$ref"]
+                let objectName = lastToken(reference, '/')
+                relationShips.push(" -- " + objectName + ' : ' + name)
+                type = 'array[] of ' + objectName
+
+                var referencedFile = reference.match('^.*yaml')
+                if (referencedFile.length === 1) {
+                  referencedFiles.push(referencedFile[0])
+                }
+              })
+            }
           }
         }
       }
