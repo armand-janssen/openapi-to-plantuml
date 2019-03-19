@@ -31,7 +31,7 @@ describe('test uml generation for properties', () => {
   it("test generation of planuml config for properties", () => {
     let expectedUml = '  name : string <[maxLength:30]>\n';
     assert.equal(arrayUnderTest[0][0].toUml(), expectedUml)
-    
+
     expectedUml = '  from : date <[pattern: YYYY-mm-dd]>\n';
     assert.equal(arrayUnderTest[0][1].toUml(), expectedUml)
 
@@ -70,7 +70,7 @@ describe('test markdown generation for properties', () => {
   it("test generation of planuml config for properties", () => {
     let expectedUml = '| name| | string| the name of the owner| maxLength : 30| John Doe| \n';
     assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedUml)
-    
+
     expectedUml = '| from| | date| the date the owner, bought the vehicle| pattern :  YYYY-mm-dd| 2018-08-24| \n';
     assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedUml)
 
@@ -197,7 +197,7 @@ function assertPropertyAge(property, expectedRequired, expectedDetails) {
 }
 
 function assertPropertyNicknames(property, expectedRequired, expectedDetails) {
-  assert.equal(property .name, 'nicknames')
+  assert.equal(property.name, 'nicknames')
   assert.equal(property.type, 'array[] of strings')
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
@@ -206,7 +206,7 @@ function assertPropertyNicknames(property, expectedRequired, expectedDetails) {
 }
 
 function assertPropertyGender(property, expectedRequired, expectedDetails) {
-  assert.equal(property .name, 'gender')
+  assert.equal(property.name, 'gender')
   assert.equal(property.type, 'enum')
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
@@ -270,7 +270,7 @@ describe('parseThreeProperties containting 2 relationship in the same file and o
     assert.equal(property.description, 'the name of the owner')
     assert.equal(property.example, 'John Doe')
   })
-  it("Check second property: name", () => {
+  it("Check second property: partner", () => {
     let property = arrayUnderTest[0][1]
     assert.equal(property.name, 'partner')
     assert.equal(property.type, 'partner')
@@ -279,7 +279,7 @@ describe('parseThreeProperties containting 2 relationship in the same file and o
     assert.equal(property.description, 'partner of the owner')
     assert.equal(property.example, undefined)
   })
-  it("Check third property: name", () => {
+  it("Check third property: children", () => {
     let property = arrayUnderTest[0][2]
     assert.equal(property.name, 'children')
     assert.equal(property.type, 'array[] of child')
@@ -300,4 +300,149 @@ describe('parseThreeProperties containting 2 relationship in the same file and o
     let file = arrayUnderTest[2][0]
     assert.equal(file, 'child.yaml');
   })
+
+})
+describe('parse Four Properties containting 1 relationship in the same file and 2 in 2 other files including required, no details, not versbose', () => {
+  let testData = getTestData('./test/propertyTestPropertiesRelationShipsTwoReferencesToOtherFiles.yaml')
+
+  let properties = testData.components.schemas.owner.properties
+  let required = testData.components.schemas.owner.required
+  let extraAttributeDetails = false
+  let verbose = false;
+
+  let arrayUnderTest = Property.parseProperties(properties, required, extraAttributeDetails, verbose)
+  assert.isTrue(arrayUnderTest != undefined)
+  it("Reponse is array of 4 sub-arrays of which the first one contains properties and the second one the ", () => {
+    assert.equal(arrayUnderTest.length, 3)
+    assert.equal(arrayUnderTest[0].length, 4) // properties
+    assert.equal(arrayUnderTest[1].length, 3) // relation ships
+    assert.equal(arrayUnderTest[2].length, 2) // external files
+  })
+  it("Check first property: name", () => {
+    let property = arrayUnderTest[0][0]
+    assert.equal(property.name, 'name')
+    assert.equal(property.type, 'string')
+    assert.equal(property.required, false)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'the name of the owner')
+    assert.equal(property.example, 'John Doe')
+  })
+  it("Check second property: partner", () => {
+    let property = arrayUnderTest[0][1]
+    assert.equal(property.name, 'partner')
+    assert.equal(property.type, 'partner')
+    assert.equal(property.required, true)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'partner of the owner')
+    assert.equal(property.example, undefined)
+  })
+  it("Check third property: children", () => {
+    let property = arrayUnderTest[0][2]
+    assert.equal(property.name, 'children')
+    assert.equal(property.type, 'array[] of child')
+    assert.equal(property.required, false)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'children of the owner')
+    assert.equal(property.example, undefined)
+  })
+  it("Check third property: parents", () => {
+    let property = arrayUnderTest[0][3]
+    assert.equal(property.name, 'parents')
+    assert.equal(property.type, 'array[] of parent')
+    assert.equal(property.required, false)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'parents of the owner')
+    assert.equal(property.example, undefined)
+  })
+  it("Check first relationship: partner", () => {
+    let relationShip = arrayUnderTest[1][0]
+    assert.equal(relationShip, ' -- partner : partner');
+  })
+
+  it("Check second relationship: child", () => {
+    let relationShip = arrayUnderTest[1][1]
+    assert.equal(relationShip, ' *-- child : children');
+  })
+  it("Check external file: child", () => {
+    let file = arrayUnderTest[2][0]
+    assert.equal(file, 'child.yaml');
+  })
+
+  it("Check third relationship: parent", () => {
+    let relationShip = arrayUnderTest[1][2]
+    assert.equal(relationShip, ' *-- parent : parents');
+  })
+  it("Check external file: parent", () => {
+    let file = arrayUnderTest[2][1]
+    assert.equal(file, 'parent.yaml');
+  })
+})
+
+describe('parse  Properties containting 1 relationship in the same file and 3 in 2 other files including required, no details, not versbose', () => {
+  let testData = getTestData('./test/propertyTestPropertiesRelationShipAnyOfReferencesToOtherFiles.yaml')
+
+  let properties = testData.components.schemas.owner.properties
+  let required = testData.components.schemas.owner.required
+  let extraAttributeDetails = false
+  let verbose = false;
+
+  let arrayUnderTest = Property.parseProperties(properties, required, extraAttributeDetails, verbose)
+  assert.isTrue(arrayUnderTest != undefined)
+  it("Check response from parseProperties", () => {
+    assert.equal(arrayUnderTest.length, 3)
+    assert.equal(arrayUnderTest[0].length, 2) // properties
+    assert.equal(arrayUnderTest[1].length, 5) // relation ships
+    assert.equal(arrayUnderTest[2].length, 2) // external files
+  })
+  it("Check property: child", () => {
+    let property = arrayUnderTest[0][0]
+    assert.equal(property.name, 'child')
+    assert.equal(property.type, 'child')
+    assert.equal(property.required, undefined)
+    assert.equal(property.details, '')
+    assert.equal(property.description, undefined)
+    assert.equal(property.example, undefined)
+  })
+    it("Check property: family", () => {
+    let property = arrayUnderTest[0][1]
+    assert.equal(property.name, 'family')
+    assert.equal(property.type, 'array[] of partner/father/mother/child')
+    assert.equal(property.required, undefined)
+    assert.equal(property.details, '')
+    assert.equal(property.description, 'family of the owner')
+    assert.equal(property.example, undefined)
+  })
+
+  it("Check relationship: child", () => {
+    let relationShip = arrayUnderTest[1][0]
+    assert.equal(relationShip, ' -- child : child');
+  })
+  it("Check relationship: partner", () => {
+    let relationShip = arrayUnderTest[1][1]
+    assert.equal(relationShip, ' *-- partner : family');
+  })
+
+  it("Check relationship: father", () => {
+    let relationShip = arrayUnderTest[1][2]
+    assert.equal(relationShip, ' *-- father : family');
+  })
+  it("Check relationship: mother", () => {
+    let relationShip = arrayUnderTest[1][3]
+    assert.equal(relationShip, ' *-- mother : family');
+  })
+  it("Check relationship: child", () => {
+    let relationShip = arrayUnderTest[1][4]
+    assert.equal(relationShip, ' *-- child : family');
+  })
+
+  it("Check external file: child", () => {
+    let file = arrayUnderTest[2][0]
+    assert.equal(file, 'child.yaml');
+  })
+
+  it("Check external file: parent", () => {
+    let file = arrayUnderTest[2][1]
+    assert.equal(file, 'parent.yaml');
+  })
+
 })

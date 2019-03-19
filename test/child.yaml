@@ -1,6 +1,6 @@
 components:
   schemas:
-    owner:
+    child:
       title: Child
       description: Child information
       type: object

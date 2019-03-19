@@ -26,7 +26,6 @@ class Property {
       var type = property.type
       var description = property.description
       var example = property.example
-
       if (verbose) console.log("***************** processing property :: [" + name + "] of type ::  [" + type + "]")
       // reference to other object, maybe in other file
       if (type === undefined && property['$ref'] != undefined) {
@@ -40,18 +39,25 @@ class Property {
         relationShips.push(" -- " + lastToken(reference, '/') + ' : ' + name)
       } else if (type === 'array') {
         var items = property.items
+
+        type = 'array[] of '
+        let first = true
+
         for (var itemIndex in property.items) {
           var item = property.items[itemIndex]
+
           if (itemIndex === 'type') {
-            type = 'array[] of ' + item + "s"
+            // process array of primitives
+            type +=  item + "s"
           }
           else if (itemIndex === '$ref') {
+            // process array of specific schema
             if (typeof item === 'string') {
               // add relationShip
               let objectName = lastToken(item, '/')
               relationShips.push(" *-- " + objectName + ' : ' + name)
 
-              type = 'array[] of ' + objectName
+              type += objectName
 
               // is it a reference to an external file?
               var referencedFile = item.match('^.*yaml')
@@ -59,22 +65,33 @@ class Property {
                 referencedFiles.push(referencedFile[0])
               }
             }
-            else if (typeof item === 'object') {
-              item.forEach(ref => {
-                var reference = ref["$ref"]
-                let objectName = lastToken(reference, '/')
-                relationShips.push(" -- " + objectName + ' : ' + name)
-                type = 'array[] of ' + objectName
+          }
+          else if (itemIndex === 'anyOf') {// typeof item === 'object') {
+            // process anyOf / allOf / oneOf item
+            for (var refIndex in item) {
+              let reference = item[refIndex]['$ref']
+              console.log(reference)
 
-                var referencedFile = reference.match('^.*yaml')
-                if (referencedFile.length === 1) {
-                  referencedFiles.push(referencedFile[0])
-                }
-              })
+              // var reference = ref["$ref"]
+              let objectName = lastToken(reference, '/')
+              relationShips.push(" *-- " + objectName + ' : ' + name)
+
+              if(!first) {
+                type += "/"
+              }
+              first = false
+            
+              type += objectName 
+
+              var referencedFile = reference.match('^.*yaml')
+              if (referencedFile != undefined && referencedFile.length === 1 && !referencedFiles.includes(referencedFile[0])) {
+                referencedFiles.push(referencedFile[0])
+              }
             }
           }
         }
       }
+
 
       var details = '<'
 
@@ -96,9 +113,6 @@ class Property {
         } else if (property.format === 'date') {
           type = 'date'
           details += constants.detailStart + 'pattern: YYYY-mm-dd' + constants.detailEnd
-        } else if (property.format === 'datetime') {
-          type = 'datetime'
-          details += constants.detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS' + constants.detailEnd
         }
       } else if (property.type === 'number' || property.type === 'integer') {
         details += property.format == undefined ? '' : constants.detailStart + 'format:' + property.format + constants.detailEnd
