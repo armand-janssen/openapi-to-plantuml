@@ -11,8 +11,7 @@ function getTestData(testYamlFile) {
   return YAML.parse(loadedFile)
 }
 
-
-describe('parseFourProperties no required, including details, not versbose', () => {
+describe('test uml generation for properties', () => {
   let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
@@ -24,7 +23,84 @@ describe('parseFourProperties no required, including details, not versbose', () 
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 5)
+    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[1].length, 0)
+    assert.equal(arrayUnderTest[2].length, 0)
+  })
+
+  it("test generation of planuml config for properties", () => {
+    let expectedUml = '  name : string <[maxLength:30]>\n';
+    assert.equal(arrayUnderTest[0][0].toUml(), expectedUml)
+    
+    expectedUml = '  from : date <[pattern: YYYY-mm-dd]>\n';
+    assert.equal(arrayUnderTest[0][1].toUml(), expectedUml)
+
+    expectedUml = '  to : date <[pattern: YYYY-mm-dd]>\n';
+    assert.equal(arrayUnderTest[0][2].toUml(), expectedUml)
+
+    expectedUml = '  age : integer <[minimum:15][maximum:120][multipleOf:1]>\n';
+    assert.equal(arrayUnderTest[0][3].toUml(), expectedUml)
+
+    expectedUml = '  nicknames : array[] of strings <[minItems:1][maxItems:5][uniqueItems:true]>\n';
+    assert.equal(arrayUnderTest[0][4].toUml(), expectedUml)
+
+    expectedUml = '  gender : enum <[male, female]>\n';
+    assert.equal(arrayUnderTest[0][5].toUml(), expectedUml)
+  })
+
+})
+
+describe('test markdown generation for properties', () => {
+  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+
+  let properties = testData.components.schemas.owner.properties
+  let required = []
+  let extraAttributeDetails = true
+  let verbose = false;
+
+  let arrayUnderTest = Property.parseProperties(properties, required, extraAttributeDetails, verbose)
+  assert.isTrue(arrayUnderTest != undefined)
+  it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
+    assert.equal(arrayUnderTest.length, 3)
+    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[1].length, 0)
+    assert.equal(arrayUnderTest[2].length, 0)
+  })
+
+  it("test generation of planuml config for properties", () => {
+    let expectedUml = '| name| | string| the name of the owner| maxLength : 30| John Doe| \n';
+    assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedUml)
+    
+    expectedUml = '| from| | date| the date the owner, bought the vehicle| pattern :  YYYY-mm-dd| 2018-08-24| \n';
+    assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedUml)
+
+    expectedUml = '| to| | date| the date the owner, sold the vehicle| pattern :  YYYY-mm-dd| 2019-07-28| \n';
+    assert.equal(arrayUnderTest[0][2].toMarkDown(), expectedUml)
+
+    expectedUml = '| age| | integer| the age of the owner| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
+    assert.equal(arrayUnderTest[0][3].toMarkDown(), expectedUml)
+
+    expectedUml = '| nicknames| | array[] of strings| the nicknames of the owner| minItems : 1<br/>maxItems : 5<br/>uniqueItems : true|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][4].toMarkDown(), expectedUml)
+
+    expectedUml = '| gender| | enum| the gender of the owner| male, female|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][5].toMarkDown(), expectedUml)
+  })
+
+})
+describe('parseProperties no required, including details, not verbose', () => {
+  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+
+  let properties = testData.components.schemas.owner.properties
+  let required = []
+  let extraAttributeDetails = true
+  let verbose = false;
+
+  let arrayUnderTest = Property.parseProperties(properties, required, extraAttributeDetails, verbose)
+  assert.isTrue(arrayUnderTest != undefined)
+  it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
+    assert.equal(arrayUnderTest.length, 3)
+    assert.equal(arrayUnderTest[0].length, 6)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
@@ -43,12 +119,15 @@ describe('parseFourProperties no required, including details, not versbose', () 
     assertPropertyAge(arrayUnderTest[0][3], false, '<[minimum:15][maximum:120][multipleOf:1]>')
   })
   it("Check fifth property: nicknames", () => {
-    assertPropertyNicknames(arrayUnderTest[0][4], false, '')
+    assertPropertyNicknames(arrayUnderTest[0][4], false, '<[minItems:1][maxItems:5][uniqueItems:true]>')
+  })
+  it("Check sixed property: gender", () => {
+    assertPropertyGender(arrayUnderTest[0][5], false, '<[male, female]>')
   })
 
 });
 
-describe('parseFourProperties including required, no details, not versbose', () => {
+describe('parseFourProperties including required, no details, not verbose', () => {
   let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
@@ -60,7 +139,7 @@ describe('parseFourProperties including required, no details, not versbose', () 
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 5)
+    assert.equal(arrayUnderTest[0].length, 6)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
@@ -118,14 +197,23 @@ function assertPropertyAge(property, expectedRequired, expectedDetails) {
 }
 
 function assertPropertyNicknames(property, expectedRequired, expectedDetails) {
-  assert.equal(property.name, 'nicknames')
+  assert.equal(property .name, 'nicknames')
   assert.equal(property.type, 'array[] of strings')
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
   assert.equal(property.description, 'the nicknames of the owner')
   assert.equal(property.example, undefined)
-
 }
+
+function assertPropertyGender(property, expectedRequired, expectedDetails) {
+  assert.equal(property .name, 'gender')
+  assert.equal(property.type, 'enum')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, 'the gender of the owner')
+  assert.equal(property.example, undefined)
+}
+
 describe('parseTwoProperties containting 1 relationship in the same file including required, no details, not versbose', () => {
   let testData = getTestData('./test/propertyTestTwoPropertiesOneRelationShipsNoReferencesToOtherFiles.yaml')
 

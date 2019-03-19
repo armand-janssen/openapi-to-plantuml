@@ -78,7 +78,7 @@ class Property {
 
       var details = '<'
 
-      if (type === 'string') {
+      if (property.type === 'string') {
         details += property.minLength == undefined ? '' : constants.detailStart + 'minLength:' + property.minLength + constants.detailEnd
         details += property.maxLength == undefined ? '' : constants.detailStart + 'maxLength:' + property.maxLength + constants.detailEnd
         details += property.pattern == undefined ? '' : constants.detailStart + 'pattern:' + property.pattern + constants.detailEnd
@@ -100,12 +100,12 @@ class Property {
           type = 'datetime'
           details += constants.detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS' + constants.detailEnd
         }
-      } else if (type === 'number' || type === 'integer') {
+      } else if (property.type === 'number' || property.type === 'integer') {
         details += property.format == undefined ? '' : constants.detailStart + 'format:' + property.format + constants.detailEnd
         details += property.minimum == undefined ? '' : constants.detailStart + 'minimum:' + property.minimum + constants.detailEnd
         details += property.maximum == undefined ? '' : constants.detailStart + 'maximum:' + property.maximum + constants.detailEnd
         details += property.multipleOf == undefined ? '' : constants.detailStart + 'multipleOf:' + property.multipleOf + constants.detailEnd
-      } else if (type === 'array') {
+      } else if (property.type === 'array') {
         details += property.minItems == undefined ? '' : constants.detailStart + 'minItems:' + property.minItems + constants.detailEnd
         details += property.maxItems == undefined ? '' : constants.detailStart + 'maxItems:' + property.maxItems + constants.detailEnd
         details += property.uniqueItems == undefined ? '' : constants.detailStart + 'uniqueItems:' + property.uniqueItems + constants.detailEnd
@@ -130,7 +130,7 @@ class Property {
   }
 
   toUml() {
-    return tab + this.name + (this.required ? ' * ' : '') + colon + this.type + " " + this.details + constants.lineBreak
+    return constants.tab + this.name + (this.required ? ' * ' : '') + constants.colon + this.type + " " + this.details + constants.lineBreak
   }
 
   toMarkDown() {

@@ -30,8 +30,17 @@ components:
         nicknames:
           description: the nicknames of the owner
           type: array
+          minItems: 1
+          maxItems: 5
+          uniqueItems: true
           items:
             type: string
+        gender:
+          description: the gender of the owner
+          type: string
+          enum:
+            - male
+            - female
       required:
         - name
         - from
