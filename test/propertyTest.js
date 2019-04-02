@@ -15,30 +15,30 @@ describe('test uml generation for properties', () => {
   let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
-  let required = []
+  let required = testData.components.schemas.owner.required
   let extraAttributeDetails = true
-  let verbose = false;
+  let verbose = true;
 
   let arrayUnderTest = Property.parseProperties(properties, required, extraAttributeDetails, verbose)
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[0].length, 10)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
 
   it("test generation of planuml config for properties", () => {
-    let expectedUml = '  name : string <[maxLength:30]>\n';
+    let expectedUml = '  name *  : string <[minLength:1][maxLength:30]>\n';
     assert.equal(arrayUnderTest[0][0].toUml(), expectedUml)
 
-    expectedUml = '  from : date <[pattern: YYYY-mm-dd]>\n';
+    expectedUml = '  from *  : date <[pattern: YYYY-MM-dd]>\n';
     assert.equal(arrayUnderTest[0][1].toUml(), expectedUml)
 
-    expectedUml = '  to : date <[pattern: YYYY-mm-dd]>\n';
+    expectedUml = '  to : date <[pattern: YYYY-MM-dd]>\n';
     assert.equal(arrayUnderTest[0][2].toUml(), expectedUml)
 
-    expectedUml = '  age : integer <[minimum:15][maximum:120][multipleOf:1]>\n';
+    expectedUml = '  age *  : integer <[minimum:15][maximum:120][multipleOf:1]>\n';
     assert.equal(arrayUnderTest[0][3].toUml(), expectedUml)
 
     expectedUml = '  nicknames : array[] of strings <[minItems:1][maxItems:5][uniqueItems:true]>\n';
@@ -46,6 +46,18 @@ describe('test uml generation for properties', () => {
 
     expectedUml = '  gender : enum <[male, female]>\n';
     assert.equal(arrayUnderTest[0][5].toUml(), expectedUml)
+
+    expectedUml = '| file1| | string [binary]|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][6].toMarkDown(), expectedUml)
+
+    expectedUml = '| file2| | string [byte]| the second file|  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][7].toMarkDown(), expectedUml)
+
+    expectedUml = '| shoeSize| | integer|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][8].toMarkDown(), expectedUml)
+
+    expectedUml = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedUml)
   })
 
 })
@@ -54,7 +66,7 @@ describe('test markdown generation for properties', () => {
   let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
-  let required = []
+  let required = testData.components.schemas.owner.required
   let extraAttributeDetails = true
   let verbose = false;
 
@@ -62,22 +74,22 @@ describe('test markdown generation for properties', () => {
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[0].length, 10)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
 
   it("test generation of planuml config for properties", () => {
-    let expectedUml = '| name| | string| the name of the owner| maxLength : 30| John Doe| \n';
+    let expectedUml = '| name|  Y | string| the name of the owner| minLength : 1<br/>maxLength : 30| John Doe| \n';
     assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedUml)
 
-    expectedUml = '| from| | date| the date the owner, bought the vehicle| pattern :  YYYY-mm-dd| 2018-08-24| \n';
+    expectedUml = '| from|  Y | date| the date the owner, bought the vehicle| pattern :  YYYY-MM-dd| 2018-08-24| \n';
     assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedUml)
 
-    expectedUml = '| to| | date| the date the owner, sold the vehicle| pattern :  YYYY-mm-dd| 2019-07-28| \n';
+    expectedUml = '| to| | date| the date the owner, sold the vehicle<br/>| pattern :  YYYY-MM-dd| 2019-07-28| \n';
     assert.equal(arrayUnderTest[0][2].toMarkDown(), expectedUml)
 
-    expectedUml = '| age| | integer| the age of the owner| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
+    expectedUml = '| age|  Y | integer| the age of the owner<br/><br/><span style="color:red"> **TODO** </span><br/>Howto determine age?<br/>| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
     assert.equal(arrayUnderTest[0][3].toMarkDown(), expectedUml)
 
     expectedUml = '| nicknames| | array[] of strings| the nicknames of the owner| minItems : 1<br/>maxItems : 5<br/>uniqueItems : true|  &nbsp; | \n';
@@ -85,6 +97,18 @@ describe('test markdown generation for properties', () => {
 
     expectedUml = '| gender| | enum| the gender of the owner| male, female|  &nbsp; | \n';
     assert.equal(arrayUnderTest[0][5].toMarkDown(), expectedUml)
+
+    expectedUml = '| file1| | string [binary]|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][6].toMarkDown(), expectedUml)
+
+    expectedUml = '| file2| | string [byte]| the second file|  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][7].toMarkDown(), expectedUml)
+
+    expectedUml = '| shoeSize| | integer|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][8].toMarkDown(), expectedUml)
+
+    expectedUml = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedUml)
   })
 
 })
@@ -100,21 +124,19 @@ describe('parseProperties no required, including details, not verbose', () => {
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[0].length, 10)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
   it("Check first property: name", () => {
-    assertPropertyName(arrayUnderTest[0][0], false, '<[maxLength:30]>')
+    assertPropertyName(arrayUnderTest[0][0], false, '<[minLength:1][maxLength:30]>')
   })
   it("Check second property: from", () => {
-    assertPropertyFrom(arrayUnderTest[0][1], false, '<[pattern: YYYY-mm-dd]>')
+    assertPropertyFrom(arrayUnderTest[0][1], false, '<[pattern: YYYY-MM-dd]>')
   })
-
   it("Check third property: to", () => {
-    assertPropertyTo(arrayUnderTest[0][2], false, '<[pattern: YYYY-mm-dd]>')
+    assertPropertyTo(arrayUnderTest[0][2], false, '<[pattern: YYYY-MM-dd]>')
   })
-
   it("Check fourth property: age", () => {
     assertPropertyAge(arrayUnderTest[0][3], false, '<[minimum:15][maximum:120][multipleOf:1]>')
   })
@@ -123,6 +145,19 @@ describe('parseProperties no required, including details, not verbose', () => {
   })
   it("Check sixed property: gender", () => {
     assertPropertyGender(arrayUnderTest[0][5], false, '<[male, female]>')
+  })
+  it("Check seventh property: file1", () => {
+    assertPropertyFile1(arrayUnderTest[0][6], false, '')
+  })
+  it("Check eigth property: file2", () => {
+    assertPropertyFile2(arrayUnderTest[0][7], false, '')
+  })
+  it("Check ninth property: shoeSize", () => {
+    assertPropertyShoeSize(arrayUnderTest[0][8], false, '')
+  })
+
+  it("Check tenth property: someDouble", () => {
+    assertPropertySomeDouble(arrayUnderTest[0][9], false, '<[format:double]>')
   })
 
 });
@@ -139,7 +174,7 @@ describe('parseFourProperties including required, no details, not verbose', () =
   assert.isTrue(arrayUnderTest != undefined)
   it("Reponse is array of 4 sub-arrays of which only first one contains data", () => {
     assert.equal(arrayUnderTest.length, 3)
-    assert.equal(arrayUnderTest[0].length, 6)
+    assert.equal(arrayUnderTest[0].length, 10)
     assert.equal(arrayUnderTest[1].length, 0)
     assert.equal(arrayUnderTest[2].length, 0)
   })
@@ -149,7 +184,6 @@ describe('parseFourProperties including required, no details, not verbose', () =
   it("Check second property: from", () => {
     assertPropertyFrom(arrayUnderTest[0][1], true, '')
   })
-
   it("Check third property: to", () => {
     assertPropertyTo(arrayUnderTest[0][2], false, '')
   })
@@ -158,6 +192,21 @@ describe('parseFourProperties including required, no details, not verbose', () =
   })
   it("Check fifth property: nicknames", () => {
     assertPropertyNicknames(arrayUnderTest[0][4], false, '')
+  })
+  it("Check sixed property: gender", () => {
+    assertPropertyGender(arrayUnderTest[0][5], false, '')
+  })
+  it("Check seventh property: file1", () => {
+    assertPropertyFile1(arrayUnderTest[0][6], false, '')
+  })
+  it("Check eigth property: file2", () => {
+    assertPropertyFile2(arrayUnderTest[0][7], false, '')
+  })
+  it("Check ninth property: shoeSize", () => {
+    assertPropertyShoeSize(arrayUnderTest[0][8], false, '')
+  })
+  it("Check tenth property: someDouble", () => {
+    assertPropertySomeDouble(arrayUnderTest[0][9], false, '')
   })
 });
 
@@ -184,7 +233,7 @@ function assertPropertyTo(property, expectedRequired, expectedDetails) {
   assert.equal(property.type, 'date')
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
-  assert.equal(property.description, 'the date the owner, sold the vehicle')
+  assert.equal(property.description, 'the date the owner, sold the vehicle\n')
   assert.equal(property.example, '2019-07-28')
 }
 function assertPropertyAge(property, expectedRequired, expectedDetails) {
@@ -192,7 +241,7 @@ function assertPropertyAge(property, expectedRequired, expectedDetails) {
   assert.equal(property.type, 'integer')
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
-  assert.equal(property.description, 'the age of the owner')
+  assert.equal(property.description, 'the age of the owner\n\nTODO\nHowto determine age?\n')
   assert.equal(property.example, '23')
 }
 
@@ -211,6 +260,38 @@ function assertPropertyGender(property, expectedRequired, expectedDetails) {
   assert.equal(property.required, expectedRequired)
   assert.equal(property.details, expectedDetails)
   assert.equal(property.description, 'the gender of the owner')
+  assert.equal(property.example, undefined)
+}
+function assertPropertyFile1(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'file1')
+  assert.equal(property.type, 'string [binary]')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, undefined)
+  assert.equal(property.example, undefined)
+}
+function assertPropertyFile2(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'file2')
+  assert.equal(property.type, 'string [byte]')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, 'the second file')
+  assert.equal(property.example, undefined)
+}
+function assertPropertyShoeSize(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'shoeSize')
+  assert.equal(property.type, 'integer')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, undefined)
+  assert.equal(property.example, undefined)
+}
+function assertPropertySomeDouble(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'someDouble')
+  assert.equal(property.type, 'integer')
+  assert.equal(property.required, expectedRequired)
+  assert.equal(property.details, expectedDetails)
+  assert.equal(property.description, undefined)
   assert.equal(property.example, undefined)
 }
 

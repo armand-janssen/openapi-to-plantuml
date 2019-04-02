@@ -8,6 +8,7 @@ components:
         name: 
           description: the name of the owner
           type: string
+          minLength: 1
           maxLength: 30
           example: John Doe
         from:
@@ -16,12 +17,17 @@ components:
           format: date
           example: 2018-08-24
         to:
-          description: the date the owner, sold the vehicle
+          description: |
+            the date the owner, sold the vehicle
           type: string
           format: date
           example: 2019-07-28
         age:
-          description: the age of the owner
+          description: |
+            the age of the owner
+
+            TODO
+            Howto determine age?
           type: integer
           minimum: 15
           maximum: 120
@@ -41,6 +47,18 @@ components:
           enum:
             - male
             - female
+        file1:
+          type: string
+          format: binary
+        file2:
+          description: the second file
+          type: string
+          format: byte
+        shoeSize:
+          type: integer
+        someDouble:
+          type: integer
+          format: double
       required:
         - name
         - from
