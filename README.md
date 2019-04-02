@@ -2,7 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/armand-janssen/openapi-to-plantuml/badge.svg?branch=master)](https://coveralls.io/github/armand-janssen/openapi-to-plantuml?branch=master)
 
-[![Build Status](https://travis-ci.org/armand-janssen/easy-links-homepage.svg?branch=master)](https://travis-ci.org/armand-janssen/easy-links-homepage)
+[![Build Status](https://travis-ci.org/armand-janssen/openapi-to-plantuml.svg?branch=master)](https://travis-ci.org/armand-janssen/openapi-to-plantuml)
 
 This tool creates a [PlantUML Class Diagram](http://plantuml.com/class-diagram) from a **OpenApi 3 Yaml** specification
 
