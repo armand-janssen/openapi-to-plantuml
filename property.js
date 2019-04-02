@@ -112,9 +112,13 @@ class Property {
           details += constants.detailEnd
         } else if (property.format === 'date') {
           type = 'date'
-          details += constants.detailStart + 'pattern: YYYY-mm-dd' + constants.detailEnd
+          details += constants.detailStart + 'pattern: YYYY-MM-dd' + constants.detailEnd
+        } else if (property.format === 'binary') {
+          type = 'string [binary]'
+        } else if (property.format === 'byte') {
+          type = 'string [byte]'
         }
-      } else if (property.type === 'number' || property.type === 'integer') {
+    } else if (property.type === 'number' || property.type === 'integer') {
         details += property.format == undefined ? '' : constants.detailStart + 'format:' + property.format + constants.detailEnd
         details += property.minimum == undefined ? '' : constants.detailStart + 'minimum:' + property.minimum + constants.detailEnd
         details += property.maximum == undefined ? '' : constants.detailStart + 'maximum:' + property.maximum + constants.detailEnd
