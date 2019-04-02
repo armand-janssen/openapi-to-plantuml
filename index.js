@@ -108,10 +108,14 @@ class Property {
           details += detailEnd
         } else if (property.format === 'date') {
           type = 'date'
-          details += detailStart + 'pattern: YYYY-mm-dd'
+          details += detailStart + 'pattern: YYYY-MM-dd'
         } else if (property.format === 'datetime') {
           type = 'datetime'
-          details += detailStart + 'pattern: YYYY-mm-ddTHH:MM:SS'
+          details += detailStart + 'pattern: YYYY-MM-ddTHH:mm:SS'
+        } else if (property.format === 'binary') {
+          type = 'string [binary]'
+        } else if (property.format === 'byte') {
+          type = 'string [byte]'
         }
       } else if (properyType === 'number' || properyType === 'integer') {
         details += property.format == undefined ? '' : detailStart + 'format:' + property.format + detailEnd
