@@ -108,10 +108,10 @@ class Property {
           details += detailEnd
         } else if (property.format === 'date') {
           type = 'date'
-          details += detailStart + 'pattern: YYYY-MM-dd'
+          details += detailStart + 'pattern: yyyy-MM-dd'
         } else if (property.format === 'datetime') {
           type = 'datetime'
-          details += detailStart + 'pattern: YYYY-MM-ddTHH:mm:SS'
+          details += detailStart + 'pattern: yyyy-MM-ddTHH:mm:SS'
         } else if (property.format === 'binary') {
           type = 'string [binary]'
         } else if (property.format === 'byte') {

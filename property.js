@@ -112,7 +112,7 @@ class Property {
           details += constants.detailEnd
         } else if (property.format === 'date') {
           type = 'date'
-          details += constants.detailStart + 'pattern: YYYY-MM-dd' + constants.detailEnd
+          details += constants.detailStart + 'pattern: yyyy-MM-dd' + constants.detailEnd
         } else if (property.format === 'binary') {
           type = 'string [binary]'
         } else if (property.format === 'byte') {

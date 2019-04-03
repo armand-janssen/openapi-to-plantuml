@@ -32,10 +32,10 @@ describe('test uml generation for properties', () => {
     let expectedUml = '  name *  : string <[minLength:1][maxLength:30]>\n';
     assert.equal(arrayUnderTest[0][0].toUml(), expectedUml)
 
-    expectedUml = '  from *  : date <[pattern: YYYY-MM-dd]>\n';
+    expectedUml = '  from *  : date <[pattern: yyyy-MM-dd]>\n';
     assert.equal(arrayUnderTest[0][1].toUml(), expectedUml)
 
-    expectedUml = '  to : date <[pattern: YYYY-MM-dd]>\n';
+    expectedUml = '  to : date <[pattern: yyyy-MM-dd]>\n';
     assert.equal(arrayUnderTest[0][2].toUml(), expectedUml)
 
     expectedUml = '  age *  : integer <[minimum:15][maximum:120][multipleOf:1]>\n';
@@ -83,10 +83,10 @@ describe('test markdown generation for properties', () => {
     let expectedUml = '| name|  Y | string| the name of the owner| minLength : 1<br/>maxLength : 30| John Doe| \n';
     assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedUml)
 
-    expectedUml = '| from|  Y | date| the date the owner, bought the vehicle| pattern :  YYYY-MM-dd| 2018-08-24| \n';
+    expectedUml = '| from|  Y | date| the date the owner, bought the vehicle| pattern :  yyyy-MM-dd| 2018-08-24| \n';
     assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedUml)
 
-    expectedUml = '| to| | date| the date the owner, sold the vehicle<br/>| pattern :  YYYY-MM-dd| 2019-07-28| \n';
+    expectedUml = '| to| | date| the date the owner, sold the vehicle<br/>| pattern :  yyyy-MM-dd| 2019-07-28| \n';
     assert.equal(arrayUnderTest[0][2].toMarkDown(), expectedUml)
 
     expectedUml = '| age|  Y | integer| the age of the owner<br/><br/><span style="color:red"> **TODO** </span><br/>Howto determine age?<br/>| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
@@ -132,10 +132,10 @@ describe('parseProperties no required, including details, not verbose', () => {
     assertPropertyName(arrayUnderTest[0][0], false, '<[minLength:1][maxLength:30]>')
   })
   it("Check second property: from", () => {
-    assertPropertyFrom(arrayUnderTest[0][1], false, '<[pattern: YYYY-MM-dd]>')
+    assertPropertyFrom(arrayUnderTest[0][1], false, '<[pattern: yyyy-MM-dd]>')
   })
   it("Check third property: to", () => {
-    assertPropertyTo(arrayUnderTest[0][2], false, '<[pattern: YYYY-MM-dd]>')
+    assertPropertyTo(arrayUnderTest[0][2], false, '<[pattern: yyyy-MM-dd]>')
   })
   it("Check fourth property: age", () => {
     assertPropertyAge(arrayUnderTest[0][3], false, '<[minimum:15][maximum:120][multipleOf:1]>')
