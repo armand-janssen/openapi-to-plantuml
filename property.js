@@ -119,7 +119,6 @@ class Property {
           type = 'string [byte]'
         }
     } else if (property.type === 'number' || property.type === 'integer') {
-      console.log("******** " + name + " - format: " + property.format)
         details += property.format == undefined ? '' : constants.detailStart + 'format:' + property.format + constants.detailEnd
         details += property.minimum == undefined ? '' : constants.detailStart + 'minimum:' + property.minimum + constants.detailEnd
         details += property.maximum == undefined ? '' : constants.detailStart + 'maximum:' + property.maximum + constants.detailEnd
@@ -140,9 +139,7 @@ class Property {
         if (verbose) console.log('Details for property ' + name + ': ' + details)
       }
 
-console.log("****************** required list: "+required)
       var requiredProperty = (required == undefined ? undefined : required.includes(name))
-      console.log("****************** requiredProperty: "+requiredProperty)
 
       parsedProperties.push(new Property(name, type, requiredProperty, details, description, example))
     }
