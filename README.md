@@ -14,11 +14,14 @@ Always run the script from the directory in which the yaml file are.
 Usage: index [options] <inputfile>
 
 Options:
-  -V, --version               output the version number
-  -o, --output <output file>  The output file
-  -v, --verbose               Show verbose debug output
-  -h, --help                  output usage information
+  -V, --version                 output the version number
+  -d, --details                 Show extra attribute details
+  -o, --output <output file>    The output file for plantuml
+  -m, --markdown <output file>  The output file for markdown
+  -v, --verbose                 Show verbose debug output
+  -h, --help                    output usage information
 ```
+
 ## Example
 **Prints to standard output**
 ```
