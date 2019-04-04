@@ -47,7 +47,7 @@ program
   .version('0.1')
   .usage('[options] <inputfile>')
   .option('-d, --details', 'Show extra attribute details')
-  .option('-o, --output <output file>', 'The output file')
+  .option('-o, --output <output file>', 'The output file for plantuml')
   .option('-m, --markdown <output file>', 'The output file for markdown')
   .option('-v, --verbose', 'Show verbose debug output')
   .parse(process.argv)
