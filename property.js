@@ -70,7 +70,6 @@ class Property {
             // process anyOf / allOf / oneOf item
             for (var refIndex in item) {
               let reference = item[refIndex]['$ref']
-              console.log(reference)
 
               // var reference = ref["$ref"]
               let objectName = lastToken(reference, '/')
