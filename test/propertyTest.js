@@ -4,7 +4,7 @@ const { assert, expect } = require('chai');
 const YAML = require('yaml')
 const Mocha = require('mocha');
 const fs = require('fs')
-const Property = require('../property')
+const Property = require('../src/property')
 
 function getTestData(testYamlFile) {
   var loadedFile = fs.readFileSync(testYamlFile, 'UTF-8')
@@ -12,7 +12,7 @@ function getTestData(testYamlFile) {
 }
 
 describe('test uml generation for properties', () => {
-  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -63,7 +63,7 @@ describe('test uml generation for properties', () => {
 })
 
 describe('test markdown generation for properties', () => {
-  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -113,7 +113,7 @@ describe('test markdown generation for properties', () => {
 
 })
 describe('parseProperties no required, including details, not verbose', () => {
-  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = []
@@ -163,7 +163,7 @@ describe('parseProperties no required, including details, not verbose', () => {
 });
 
 describe('parseFourProperties including required, no details, not verbose', () => {
-  let testData = getTestData('./test/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -296,7 +296,7 @@ function assertPropertySomeDouble(property, expectedRequired, expectedDetails) {
 }
 
 describe('parseTwoProperties containting 1 relationship in the same file including required, no details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestTwoPropertiesOneRelationShipsNoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestTwoPropertiesOneRelationShipsNoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -327,7 +327,7 @@ describe('parseTwoProperties containting 1 relationship in the same file includi
 })
 
 describe('parseThreeProperties containting 2 relationship in the same file and other file including required, no details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestTwoPropertiesTwoRelationShipsOneReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestTwoPropertiesTwoRelationShipsOneReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -384,7 +384,7 @@ describe('parseThreeProperties containting 2 relationship in the same file and o
 
 })
 describe('parse Four Properties containting 1 relationship in the same file and 2 in 2 other files including required, no details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestPropertiesRelationShipsTwoReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesRelationShipsTwoReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required
@@ -460,7 +460,7 @@ describe('parse Four Properties containting 1 relationship in the same file and 
 })
 
 describe('parse  Properties containting 1 relationship in the same file and 3 in 2 other files including required, no details, not versbose', () => {
-  let testData = getTestData('./test/propertyTestPropertiesRelationShipAnyOfReferencesToOtherFiles.yaml')
+  let testData = getTestData('./test/resources/propertyTestPropertiesRelationShipAnyOfReferencesToOtherFiles.yaml')
 
   let properties = testData.components.schemas.owner.properties
   let required = testData.components.schemas.owner.required

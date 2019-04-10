@@ -2,7 +2,7 @@
   "name": "yaml-components-openapi-to-plantuml",
   "version": "1.0.0",
   "description": "Converts OpenAPI 3 components to PlantUml",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "nyc mocha"
   },

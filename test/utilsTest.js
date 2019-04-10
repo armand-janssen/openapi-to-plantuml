@@ -1,7 +1,7 @@
 'use strict';
 
 const { assert, expect } = require('chai');
-const utils = require('../utils')()
+const utils = require('../src/utils')()
 
 describe('test add to array if not exists', () => {
   let myArray = new Array();
