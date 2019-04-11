@@ -22,7 +22,7 @@ function loadYamlFile(file, extraAttributeDetails, verbose) {
 
         if (referencedFiles != undefined && referencedFiles.length > 0) {
           for(var referencedFileIndex in referencedFiles) {
-            var parsedSchemas = loadYamlFile("./" + referencedFiles[referencedFileIndex])
+            var parsedSchemas = loadYamlFile("./" + referencedFiles[referencedFileIndex], extraAttributeDetails, verbose)
 
             addValuesOfArrayToOtherArrayIfNotExist(parsedSchemas,allParsedSchemas)
           }
