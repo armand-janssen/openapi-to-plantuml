@@ -1,47 +1,43 @@
-const YAML = require('yaml')
-const fs = require('fs')
-const program = require('commander')
-const Schema = require('./schema')
-const utils = require('./utils')()
-const constants = require('./constants').constants
+/* eslint-disable no-console */
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
+const YAML = require('yaml');
+const fs = require('fs');
+const program = require('commander');
+const Schema = require('./schema');
+const utils = require('./utils');
+const { constants } = require('./constants');
 
 function loadYamlFile(file, extraAttributeDetails, verbose) {
-  if (verbose) console.log("***************** processing file :: " + file)
-  let allParsedSchemas = []
+  if (verbose) console.log(`***************** processing file :: ${file}`);
+  const allParsedSchemas = [];
 
-  let loadedFile = fs.readFileSync(file, 'UTF-8')
-  let myYaml = YAML.parse(loadedFile)
+  const loadedFile = fs.readFileSync(file, 'UTF-8');
+  const myYaml = YAML.parse(loadedFile);
 
-  if (myYaml != undefined) {
-    if (myYaml.components != undefined) {
-      if (myYaml.components.schemas != undefined) {
-        schemas = myYaml.components.schemas
-        var [referencedFiles, parsedSchemas] = Schema.parseSchemas(schemas, extraAttributeDetails, verbose)
+  if (myYaml !== undefined) {
+    if (myYaml.components !== undefined) {
+      if (myYaml.components.schemas !== undefined) {
+        const { schemas } = myYaml.components;
+        const [referencedFiles, parsedSchemas] = Schema.parseSchemas(schemas, extraAttributeDetails, verbose);
 
-        addValuesOfArrayToOtherArrayIfNotExist(parsedSchemas,allParsedSchemas)
+        utils.addValuesOfArrayToOtherArrayIfNotExist(parsedSchemas, allParsedSchemas);
 
-        if (referencedFiles != undefined && referencedFiles.length > 0) {
-          for(var referencedFileIndex in referencedFiles) {
-            var parsedSchemas = loadYamlFile("./" + referencedFiles[referencedFileIndex], extraAttributeDetails, verbose)
+        if (referencedFiles !== undefined && referencedFiles.length > 0) {
+          for (const referencedFileIndex in referencedFiles) {
+            const referencedParsedSchemas = loadYamlFile(`./${referencedFiles[referencedFileIndex]}`, extraAttributeDetails, verbose);
 
-            addValuesOfArrayToOtherArrayIfNotExist(parsedSchemas,allParsedSchemas)
+            utils.addValuesOfArrayToOtherArrayIfNotExist(referencedParsedSchemas, allParsedSchemas);
           }
         }
       }
     }
   }
-  return allParsedSchemas
+  return allParsedSchemas;
 }
 
-
-function lastToken(value, token) {
-  var xs = value.split(token);
-  return xs.length > 1 ? xs.pop() : null;
-}
-
-var inputFilename = undefined
-let verbose = false
-let extraAttributeDetails = false
+let verbose = false;
+let extraAttributeDetails = false;
 
 program
   .version('0.1')
@@ -50,38 +46,37 @@ program
   .option('-o, --output <output file>', 'The output file for plantuml')
   .option('-m, --markdown <output file>', 'The output file for markdown')
   .option('-v, --verbose', 'Show verbose debug output')
-  .parse(process.argv)
+  .parse(process.argv);
 
 if (program.verbose) {
-  verbose = true
+  verbose = true;
 }
 if (program.details) {
-  extraAttributeDetails = true
+  extraAttributeDetails = true;
 }
 if (!program.args.length) {
   program.help();
-
 } else {
+  const allParsedSchemas = loadYamlFile(program.args[0], extraAttributeDetails, verbose);
 
-  inputFile = program.args[0]
-  let allParsedSchemas = loadYamlFile(inputFile, extraAttributeDetails, verbose)
-
-  var uml = "@startuml" + constants.lineBreak
-  for (schemaIndex in allParsedSchemas) {
-    uml += allParsedSchemas[schemaIndex].toUml()
-  }
-  uml += "@enduml" + constants.lineBreak
-
-
-  if (program.output != undefined) {
-    fs.writeFileSync(program.output, uml, 'utf8')
-  }
-
-  if (program.markdown != undefined) {
-    var md = ""
-    for (schemaIndex in allParsedSchemas) {
-      md += allParsedSchemas[schemaIndex].toMarkDown()
+  let uml = `@startuml${constants.lineBreak}`;
+  for (const schemaIndex in allParsedSchemas) {
+    if (Object.prototype.hasOwnProperty.call(allParsedSchemas, schemaIndex)) {
+      uml += allParsedSchemas[schemaIndex].toUml();
     }
-    fs.writeFileSync(program.markdown, md, 'utf8')
+  }
+  uml += `@enduml${constants.lineBreak}`;
+
+
+  if (program.output !== undefined) {
+    fs.writeFileSync(program.output, uml, 'utf8');
+  }
+
+  if (program.markdown !== undefined) {
+    let md = '';
+    for (const schemaIndex in allParsedSchemas) {
+      md += allParsedSchemas[schemaIndex].toMarkDown();
+    }
+    fs.writeFileSync(program.markdown, md, 'utf8');
   }
 }
