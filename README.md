@@ -40,10 +40,10 @@ openapi-to-plantuml vehicle.yaml --plantuml ./example.plantuml --markdown ./exam
 # Example output plantuml
 
 ## No details
-![Example no details](https://github.com/armand-janssen/openapi-to-plantuml/blob/master/example/example-no-details.png)
+![Example no details](https://raw.githubusercontent.com/armand-janssen/openapi-to-plantuml/master/example/example-no-details.png)
 
 ## Details
-![Example with details](https://github.com/armand-janssen/openapi-to-plantuml/blob/master/example/example-details.png)
+![Example with details](https://raw.githubusercontent.com/armand-janssen/openapi-to-plantuml/master/example/example-details.png)
 
 
 # TODO

@@ -13,13 +13,13 @@ function addValueToArrayIfNotExists(array, value) {
   if (!array.includes(value)) {
     array.push(value);
   }
-};
+}
 function addValuesOfArrayToOtherArrayIfNotExist(sourceArray, targetArray) {
   for (const sourceArrayIndex in sourceArray) {
     const value = sourceArray[sourceArrayIndex];
     this.addValueToArrayIfNotExists(targetArray, value);
   }
-};
+}
 
 module.exports = {
   lastToken, addValueToArrayIfNotExists, addValuesOfArrayToOtherArrayIfNotExist,
