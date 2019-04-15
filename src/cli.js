@@ -6,7 +6,7 @@ const program = require('commander');
 const openApiToPlantuml = require('./index.js');
 
 program
-  .version('1.0.0')
+  .version('1.0.1')
   .usage('[options] <inputfile>')
   .description('At least 1 output type must be selected: plantuml or markdown!')
   .option('-d, --details', 'Show extra attribute details')
