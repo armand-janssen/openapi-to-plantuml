@@ -23,4 +23,4 @@ function addValuesOfArrayToOtherArrayIfNotExist(sourceArray, targetArray) {
 
 module.exports = {
   lastToken, addValueToArrayIfNotExists, addValuesOfArrayToOtherArrayIfNotExist,
-}
+};

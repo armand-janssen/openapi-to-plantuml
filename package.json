@@ -8,6 +8,9 @@
     "lint": "eslint . --ignore-pattern node_modules/",
     "lintfix": "eslint . --fix"
   },
+  "bin": {
+    "openapi-to-plantuml": "src/cli.js"
+  },
   "author": "Armand Janssen",
   "license": "GNU GENERAL PUBLIC LICENSE",
   "dependencies": {
