@@ -1,15 +1,31 @@
 {
-  "name": "yaml-components-openapi-to-plantuml",
-  "version": "1.0.0",
-  "description": "Converts OpenAPI 3 components to PlantUml",
-  "main": "index.js",
+  "name": "openapi-to-plantuml",
+  "version": "1.0.1",
+  "description": "Converts OpenAPI 3 components to PlantUml or Markdown",
+  "main": "src/index.js",
+  "homepage": "https://github.com/armand-janssen/openapi-to-plantuml",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "nyc mocha",
+    "lint": "eslint . --ignore-pattern node_modules/",
+    "lintfix": "eslint . --fix"
+  },
+  "bin": {
+    "openapi-to-plantuml": "src/cli.js"
   },
   "author": "Armand Janssen",
   "license": "GNU GENERAL PUBLIC LICENSE",
   "dependencies": {
     "commander": "^2.19.0",
+    "nyc": "^13.3.0",
     "yaml": "^1.3.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-classes": "^0.1.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-promise": "^4.0.1"
   }
 }
