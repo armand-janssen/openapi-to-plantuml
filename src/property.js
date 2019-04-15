@@ -38,9 +38,7 @@ class Property {
         }
         type = name;
         // add relationShip
-        console.log(`aja 1: ${relationShips}`);
         relationShips.push(` -- ${utils.lastToken(reference, '/')} : ${name}`);
-        console.log(`aja 2: ${relationShips}`);
       } else if (type === 'array') {
         type = 'array[] of ';
         let first = true;
