@@ -127,11 +127,11 @@ class Property {
 
       details += '>';
 
-      // if no details are added, then clear the brackets
       if (details.length === 2 || !extraAttributeDetails) {
         if (verbose) console.log(`No details for property ${name}`);
         details = '';
       } else if (verbose) console.log(`Details for property ${name}: ${details}`);
+
 
       const requiredProperty = (required === undefined ? undefined : required.includes(name));
 
@@ -146,10 +146,20 @@ class Property {
   }
 
   toMarkDown() {
-    const markDownDetails = (this.details === undefined || this.details === '') ? ' &nbsp; ' : this.details.replace(/\]>/g, '').replace(/<\[/g, '').replace(/:/g, ' : ').replace(/>/g, '')
-      .replace(/\]\[/g, '<br/>');
-    const markDownDescription = this.description === undefined ? ' &nbsp; ' : this.description.replace(/\n/g, '<br/>').replace(/todo/gi, '<span style="color:red"> **TODO** </span>');
-    const markDownExample = this.example === undefined ? ' &nbsp; ' : this.example.toString().replace(/\n/g, '<br/>');
+    const markDownDetails = (this.details === undefined || this.details === '') ? ' &nbsp; ' : this.details
+      .replace(/\]>/g, '')
+      .replace(/<\[/g, '')
+      .replace(/:/g, ' : ')
+      .replace(/>/g, '')
+      .replace(/\]\[/g, '<br/>')
+      .replace(/\|/g, '\\|');
+    const markDownDescription = this.description === undefined ? ' &nbsp; ' : this.description
+      .replace(/\n/g, '<br/>')
+      .replace(/todo/gi, '<span style="color:red"> **TODO** </span>')
+      .replace(/\|/g, '\\|');
+    const markDownExample = this.example === undefined ? ' &nbsp; ' : this.example.toString()
+      .replace(/\n/g, '<br/>')
+      .replace(/\|/g, '\\|');
     return constants.mdRowSeperator + this.name
       + constants.mdRowSeperator + (this.required ? ' Y ' : '')
       + constants.mdRowSeperator + this.type

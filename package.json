@@ -1,6 +1,7 @@
 {
+  "package-name": "openapi-to-plantuml",
   "name": "openapi-to-plantuml",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Converts OpenAPI 3 components to PlantUml or Markdown",
   "main": "src/index.js",
   "homepage": "https://github.com/armand-janssen/openapi-to-plantuml",

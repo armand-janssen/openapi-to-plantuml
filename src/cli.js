@@ -6,7 +6,7 @@ const program = require('commander');
 const openApiToPlantuml = require('./index.js');
 
 program
-  .version('1.0.1')
+  .version('1.0.2')
   .usage('[options] <inputfile>')
   .description('At least 1 output type must be selected: plantuml or markdown!')
   .option('-d, --details', 'Show extra attribute details')
@@ -18,20 +18,21 @@ program
 if (!program.args.length || (program.plantuml == null && program.markdown == null)) {
   program.help();
 } else {
-  console.log('Reading openAPI...');
-  const allParsedSchemas = openApiToPlantuml.loadYamlFile(program.args[0], program.details, program.verbose);
+  const { verbose } = program;
 
+  if (verbose) console.log('Reading openAPI...');
+  const allParsedSchemas = openApiToPlantuml.loadYamlFile(program.args[0], program.details, verbose);
 
   if (program.plantuml !== undefined) {
-    console.log('Writing plantuml...');
+    if (verbose) console.log('Writing plantuml...');
     const uml = openApiToPlantuml.renderUml(allParsedSchemas);
     fs.writeFileSync(program.plantuml, uml, 'utf8');
   }
 
   if (program.markdown !== undefined) {
-    console.log('Writing markdown...');
+    if (verbose) console.log('Writing markdown...');
     const md = openApiToPlantuml.renderMarkDown(allParsedSchemas);
     fs.writeFileSync(program.markdown, md, 'utf8');
   }
-  console.log('Finished!');
+  if (verbose) console.log('Finished!');
 }
