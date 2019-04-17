@@ -59,6 +59,9 @@ components:
         someDouble:
           type: integer
           format: double
+        pipe:
+          type: string
+          pattern: '^(nl|NL|Nederland)$'
       required:
         - name
         - from

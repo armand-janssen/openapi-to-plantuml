@@ -93,6 +93,14 @@ function assertPropertySomeDouble(property, expectedRequired, expectedDetails) {
   assert.equal(property.description, undefined);
   assert.equal(property.example, undefined);
 }
+function assertPropertyPipe(property, expectedRequired, expectedDetails) {
+  assert.equal(property.name, 'pipe');
+  assert.equal(property.type, 'string');
+  assert.equal(property.required, expectedRequired);
+  assert.equal(property.details, expectedDetails);
+  assert.equal(property.description, undefined);
+  assert.equal(property.example, undefined);
+}
 
 describe('test uml generation for properties', () => {
   const testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml');
@@ -106,12 +114,12 @@ describe('test uml generation for properties', () => {
   assert.isDefined(arrayUnderTest);
   it('Reponse is array of 4 sub-arrays of which only first one contains data', () => {
     assert.equal(arrayUnderTest.length, 3);
-    assert.equal(arrayUnderTest[0].length, 10);
+    assert.equal(arrayUnderTest[0].length, 11);
     assert.equal(arrayUnderTest[1].length, 0);
     assert.equal(arrayUnderTest[2].length, 0);
   });
 
-  it('test generation of planuml config for properties', () => {
+  it('test generation of plantuml config for properties', () => {
     let expectedUml = '  name *  : string <[minLength:1][maxLength:30]>\n';
     assert.equal(arrayUnderTest[0][0].toUml(), expectedUml);
 
@@ -130,17 +138,20 @@ describe('test uml generation for properties', () => {
     expectedUml = '  gender : enum <[male, female]>\n';
     assert.equal(arrayUnderTest[0][5].toUml(), expectedUml);
 
-    expectedUml = '| file1| | string [binary]|  &nbsp; |  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][6].toMarkDown(), expectedUml);
+    expectedUml = '  file1 : string [binary] \n';
+    assert.equal(arrayUnderTest[0][6].toUml(), expectedUml);
 
-    expectedUml = '| file2| | string [byte]| the second file|  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][7].toMarkDown(), expectedUml);
+    expectedUml = '  file2 : string [byte] \n';
+    assert.equal(arrayUnderTest[0][7].toUml(), expectedUml);
 
-    expectedUml = '| shoeSize| | integer|  &nbsp; |  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][8].toMarkDown(), expectedUml);
+    expectedUml = '  shoeSize : integer \n';
+    assert.equal(arrayUnderTest[0][8].toUml(), expectedUml);
 
-    expectedUml = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedUml);
+    expectedUml = '  someDouble : integer <[format:double]>\n';
+    assert.equal(arrayUnderTest[0][9].toUml(), expectedUml);
+
+    expectedUml = '  pipe : string <[pattern:^(nl|NL|Nederland)$]>\n';
+    assert.equal(arrayUnderTest[0][10].toUml(), expectedUml);
   });
 });
 
@@ -156,43 +167,47 @@ describe('test markdown generation for properties', () => {
   assert.isDefined(arrayUnderTest);
   it('Reponse is array of 4 sub-arrays of which only first one contains data', () => {
     assert.equal(arrayUnderTest.length, 3);
-    assert.equal(arrayUnderTest[0].length, 10);
+    assert.equal(arrayUnderTest[0].length, 11);
     assert.equal(arrayUnderTest[1].length, 0);
     assert.equal(arrayUnderTest[2].length, 0);
   });
 
   it('test generation of planuml config for properties', () => {
-    let expectedUml = '| name|  Y | string| the name of the owner| minLength : 1<br/>maxLength : 30| John Doe| \n';
-    assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedUml);
+    let expectedMarkDown = '| name|  Y | string| the name of the owner| minLength : 1<br/>maxLength : 30| John Doe| \n';
+    assert.equal(arrayUnderTest[0][0].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| from|  Y | date| the date the owner, bought the vehicle| pattern :  yyyy-MM-dd| 2018-08-24| \n';
-    assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedUml);
+    expectedMarkDown = '| from|  Y | date| the date the owner, bought the vehicle| pattern :  yyyy-MM-dd| 2018-08-24| \n';
+    assert.equal(arrayUnderTest[0][1].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| to| | date| the date the owner, sold the vehicle<br/>| pattern :  yyyy-MM-dd| 2019-07-28| \n';
-    assert.equal(arrayUnderTest[0][2].toMarkDown(), expectedUml);
+    expectedMarkDown = '| to| | date| the date the owner, sold the vehicle<br/>| pattern :  yyyy-MM-dd| 2019-07-28| \n';
+    assert.equal(arrayUnderTest[0][2].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| age|  Y | integer| the age of the owner<br/><br/><span style="color:red"> **TODO** </span><br/>Howto determine age?<br/>| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
-    assert.equal(arrayUnderTest[0][3].toMarkDown(), expectedUml);
+    expectedMarkDown = '| age|  Y | integer| the age of the owner<br/><br/><span style="color:red"> **TODO** </span><br/>Howto determine age?<br/>| minimum : 15<br/>maximum : 120<br/>multipleOf : 1| 23| \n';
+    assert.equal(arrayUnderTest[0][3].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| nicknames| | array[] of strings| the nicknames of the owner| minItems : 1<br/>maxItems : 5<br/>uniqueItems : true|  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][4].toMarkDown(), expectedUml);
+    expectedMarkDown = '| nicknames| | array[] of strings| the nicknames of the owner| minItems : 1<br/>maxItems : 5<br/>uniqueItems : true|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][4].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| gender| | enum| the gender of the owner| male, female|  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][5].toMarkDown(), expectedUml);
+    expectedMarkDown = '| gender| | enum| the gender of the owner| male, female|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][5].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| file1| | string [binary]|  &nbsp; |  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][6].toMarkDown(), expectedUml);
+    expectedMarkDown = '| file1| | string [binary]|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][6].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| file2| | string [byte]| the second file|  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][7].toMarkDown(), expectedUml);
+    expectedMarkDown = '| file2| | string [byte]| the second file|  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][7].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| shoeSize| | integer|  &nbsp; |  &nbsp; |  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][8].toMarkDown(), expectedUml);
+    expectedMarkDown = '| shoeSize| | integer|  &nbsp; |  &nbsp; |  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][8].toMarkDown(), expectedMarkDown);
 
-    expectedUml = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
-    assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedUml);
+    expectedMarkDown = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedMarkDown);
+
+    expectedMarkDown = '  pipe : string <[pattern:^(nl|NL|Nederland)$]>\n';
+    assert.equal(arrayUnderTest[0][10].toUml(), expectedMarkDown);
   });
 });
+
 describe('parseProperties no required, including details, not verbose', () => {
   const testData = getTestData('./test/resources/propertyTestPropertiesNoRelationShipsNoReferencesToOtherFiles.yaml');
 
@@ -205,7 +220,7 @@ describe('parseProperties no required, including details, not verbose', () => {
   assert.isDefined(arrayUnderTest);
   it('Reponse is array of 4 sub-arrays of which only first one contains data', () => {
     assert.equal(arrayUnderTest.length, 3);
-    assert.equal(arrayUnderTest[0].length, 10);
+    assert.equal(arrayUnderTest[0].length, 11);
     assert.equal(arrayUnderTest[1].length, 0);
     assert.equal(arrayUnderTest[2].length, 0);
   });
@@ -236,9 +251,11 @@ describe('parseProperties no required, including details, not verbose', () => {
   it('Check ninth property: shoeSize', () => {
     assertPropertyShoeSize(arrayUnderTest[0][8], false, '');
   });
-
   it('Check tenth property: someDouble', () => {
     assertPropertySomeDouble(arrayUnderTest[0][9], false, '<[format:double]>');
+  });
+  it('Check eleventh property: pipe', () => {
+    assertPropertyPipe(arrayUnderTest[0][10], false, '<[pattern:^(nl\\|NL\\|Nederland)$]>');
   });
 });
 
@@ -254,7 +271,7 @@ describe('parseFourProperties including required, no details, not verbose', () =
   assert.isDefined(arrayUnderTest);
   it('Reponse is array of 4 sub-arrays of which only first one contains data', () => {
     assert.equal(arrayUnderTest.length, 3);
-    assert.equal(arrayUnderTest[0].length, 10);
+    assert.equal(arrayUnderTest[0].length, 11);
     assert.equal(arrayUnderTest[1].length, 0);
     assert.equal(arrayUnderTest[2].length, 0);
   });
@@ -287,6 +304,9 @@ describe('parseFourProperties including required, no details, not verbose', () =
   });
   it('Check tenth property: someDouble', () => {
     assertPropertySomeDouble(arrayUnderTest[0][9], false, '');
+  });
+  it('Check eleventh property: pipe', () => {
+    assertPropertyPipe(arrayUnderTest[0][10], false, '');
   });
 });
 
