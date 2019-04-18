@@ -203,8 +203,8 @@ describe('test markdown generation for properties', () => {
     expectedMarkDown = '| someDouble| | integer|  &nbsp; | format : double|  &nbsp; | \n';
     assert.equal(arrayUnderTest[0][9].toMarkDown(), expectedMarkDown);
 
-    expectedMarkDown = '  pipe : string <[pattern:^(nl|NL|Nederland)$]>\n';
-    assert.equal(arrayUnderTest[0][10].toUml(), expectedMarkDown);
+    expectedMarkDown = '| pipe| | string|  &nbsp; | pattern : ^(nl\\|NL\\|Nederland)$|  &nbsp; | \n';
+    assert.equal(arrayUnderTest[0][10].toMarkDown(), expectedMarkDown);
   });
 });
 
@@ -255,7 +255,7 @@ describe('parseProperties no required, including details, not verbose', () => {
     assertPropertySomeDouble(arrayUnderTest[0][9], false, '<[format:double]>');
   });
   it('Check eleventh property: pipe', () => {
-    assertPropertyPipe(arrayUnderTest[0][10], false, '<[pattern:^(nl\\|NL\\|Nederland)$]>');
+    assertPropertyPipe(arrayUnderTest[0][10], false, '<[pattern:^(nl|NL|Nederland)$]>');
   });
 });
 
