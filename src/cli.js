@@ -34,5 +34,5 @@ if (!program.args.length || (program.plantuml == null && program.markdown == nul
     const md = openApiToPlantuml.renderMarkDown(allParsedSchemas);
     fs.writeFileSync(program.markdown, md, 'utf8');
   }
-  if (verbose) console.log('Finished!');
+  if (verbose) console.log('Finished rendering documentation!');
 }
