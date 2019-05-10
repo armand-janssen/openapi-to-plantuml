@@ -1,3 +1,6 @@
+# Development on openapi-to-plantuml is stopped since may 2019! It is migrated to https://github.com/armand-janssen/openapi-transformer
+
+
 # OpenAPI to PlantUML
 
 [![Coverage Status](https://coveralls.io/repos/github/armand-janssen/openapi-to-plantuml/badge.svg?branch=master)](https://coveralls.io/github/armand-janssen/openapi-to-plantuml?branch=master)
